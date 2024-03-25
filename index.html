@@ -3,21 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <title>Globetrotter</title>
 </head>
 <body>
-    <header>
+    <header id="header">
         <h1>Globetrotter</h1>
         <h2>Key Indicators of Global Development</h2>
     </header>
     <main>
-        <section id="grid-container">
-
-        </section>
-        <section id="filter-navigation">
+        <!-- 1. popup to choose an indicator -->
+        <section id="choose-indicator-popup">
+            <div id="choose-indicator-text">
+                Let's take a trip back to the past. Pick an indicator that you would like to learn more about and explore how it has changed globally over time.
+            </div>
+            <div id="choose-indicator-optionlist">
+                <input type="radio" id="option1" name="indicator-options" value="GDP per Capita" onclick="optionSelected('GDP per Capita')">
+                <label for="option1">GDP per Capita</label>
             
+                <input type="radio" id="option2" name="indicator-options" value="Life Expectancy" onclick="optionSelected('Life Expectancy')">
+                <label for="option2">Life Expectancy</label>
+            
+                <input type="radio" id="option3" name="indicator-options" value="CO2 Emissions per Capita" onclick="optionSelected('CO2 Emissions per Capita')">
+                <label for="option3">CO2 Emissions per Capita</label>
+            
+                <input type="radio" id="option4" name="indicator-options" value="Gender Equality" onclick="optionSelected('Gender Equality')">
+                <label for="option4">Gender Equality</label>
+            </div>
+        </section>
+
+        <!-- 2. popup to choose a country -->
+        <section class="popup" id="choose-country-popup">
+            <div id="choose-country-text">
+                Let's dive deeper into a specific country. Click on one counntry of your choice on the map and let's explore how their indicators compare to the world averages.
+            </div>
+            <button id="choose-country-btn" onclick="displayFirstDashboard()">Let's choose a country!</button>
+        </section>
+
+        <!-- Dashboard header -->
+        <section class="popup" id="dashboard-header">
+            <div id="dashboard-header">
+                [Life Expectancy]
+            </div>
+            <div id="indicator-filter">
+                <div id="GDP">GDP per Capita</div>
+                <div id="LifeEx">Life Expectancy</div>
+                <div id="CO2">CO2 Emissions</div>
+                <div id="Equality">Gender Equality</div>
+            </div>
+        </section>
+
+        <!-- 1. dashboard: explora an indicator -->
+        <section id="indicator-dashboard-grid">
+            <div id="worldmap"></div>
+            <div id="top5"></div>
+            <div id="distribution"></div>
+            <div id="linegraph"></div>
+        </section>
+
+        <!-- 2. dashboard: explora a country -->
+        <section id="country-dashboard-grid">
+            <div id="worldmap"></div>
+            <div id="indicators-against-worldAvg"></div>
+            <div id="distribution"></div>
+            <div id="linegraph"></div>
+        </section>
+
+        <!-- Dashboard footer: timeslider and Navigation -->
+        <section id="timeslider-and-navigation">
+            <button id="motion-btn">Play Motion</button>
+            <div id="timeslider">Timeslider</div>
+            <button id="back-btn">back</button>
+            <button id="next-btn">next</button>
         </section>
     </main>
     
+    <!-- linking to JS file -->
+    <script src="script.js"></script>
 </body>
 </html>
