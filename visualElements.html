@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+
+	<title> D3 Tutorial </title>
+
+	<!--specifies that our DIV and SVG elements takes the full width and height of the HTML window-->
+	<style>
+		html,
+		body,
+		div,
+		svg {
+			width: 100%;
+			height: 100%
+		}
+
+		rect {
+			fill: gold;
+			stroke: black;
+			stroke-width: 2px;
+		}
+	</style>
+</head>
+
+<body>
+	<h2>D3 Visual Elements</h2>
+
+	<!--a new DIV element "myDiv" with a SVG element inside-->
+	<div id="myDiv">
+		<svg>
+		</svg>
+	</div>
+
+	<script>
+
+		(async () => {
+			const dataPath = "reformatted_data/2024ONLY_reformatted_gender_equality.csv";	// our data file
+  
+
+			const myData = await d3.csv(dataPath);							// loading our data
+
+			d3.select("svg")					// select the SVG element we want to draw on
+				.selectAll("rect")				// select all "rect" elements in the SVG (currently none)
+				.data(myData)					// links a rect element to every data element of "myData"
+				.enter()						// selects every data point that does not have a rect element (currently all of them!)
+				.append("rect")					// create a new "rect" element for every data point selected	
+				.attr("width", function (d) {	// specify the width of the rectangle
+					return d.life_expectancy * 1;
+				})
+				.attr("height", 20)			// specify the height of the rectangle
+				.attr("x", 50)				// specify the x position of the rectangle (in pixels. upper left corner = 0)
+				.attr("y", function (d, i) {	// specify the y position of the rectangle
+					return i * 50 + 50;		// "i" is the index of the datapoint
+				})
+				.on("mouseenter", function (event, d) {	// if the mouse enters a rectangle - event returns before data
+					d3.select(this)					// select the element it entered
+						.style("fill", "#FF9C00");	// change its fill colour
+					d3.select("svg")
+						.append("text")
+						.attr("class", "tooltip")	// we can give new elements a CSS class, allowing us to select them later
+						.attr("x", event.x)			// we can access the coordinates from the mouseover event
+						.attr("y", event.y - 20)
+						.text("Average life expectancy: " + d.life_expectancy);
+				})
+				.on("mouseout", function (event, d) {	// if the mouse exits a rectangle
+					d3.select(this)					// select the element it exited
+						.style("fill", "gold")		// reset the fill colour
+					d3.selectAll(".tooltip")		// select all elements of our class "tooltip"
+						.remove();					// removes all elements
+				});
+
+			d3.select("svg")
+				.selectAll("text")
+				.data(myData)
+				.enter()
+				.append("text")
+				.attr("x", 20)
+				.attr("y", function (d, i) {
+					return i * 50 + 45;		// note the small offset
+				})
+				.text(function (d) {			// text attribute of text svg node
+					return d.country;
+				});
+		})();
+
+	</script>
+
+</body>
+
+</html>

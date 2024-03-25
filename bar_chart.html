@@ -1,0 +1,131 @@
+<HTML>
+    <head>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <style>
+            html, body, div, svg {
+                width: 100%;
+                height: 100%;
+            }
+    
+            rect {
+                fill: gold;
+                stroke: black;
+                stroke-width: 2px;
+            }
+    
+            .tooltip {
+                font-size: 15px;
+            }
+    
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+    
+            .axis text {
+                font-size: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>D3 Visual Elements</h2>
+        <div id="myDiv">
+            <svg></svg>
+        </div>
+        <script>
+            d3.csv("reformatted_data/reformatted_life_expectancy.csv").then(function(data) {
+                const margin = {top: 10, right: 20, bottom: 30, left: 100},
+                      svgWidth = 960,
+                      svgHeight = 250,
+                      width = svgWidth - margin.left - margin.right,
+                      height = svgHeight - margin.top - margin.bottom;
+    
+                const svg = d3.select("svg")
+                              .attr("width", svgWidth)
+                              .attr("height", svgHeight)
+                            .append("g")
+                              .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+                const x = d3.scaleLinear()
+                            .domain([0, d3.max(data, d => +d.life_expectancy)])
+                            .range([0, width]);
+    
+                svg.append("g")
+                   .attr("transform", `translate(0,${height})`)
+                   .call(d3.axisBottom(x));
+                   svg.append("text")             
+                   .attr("transform",
+                         "translate(" + (width/2) + " ," + 
+                                        (height + margin.top + 20) + ")")
+                   .style("text-anchor", "middle")
+                   .text("Life Expectancy");
+    
+                svg.append("text")
+                   .attr("transform", "rotate(-90)")
+                   .attr("y", 0 - margin.left)
+                   .attr("x",0 - (height / 2))
+                   .attr("dy", "1em")
+                   .style("text-anchor", "middle")
+                   .text("Country"); 
+    
+                data.forEach(function(d) {
+                    d.life_expectancy = +d.life_expectancy;
+                });
+    
+                data.sort(function(a, b) {
+                    return b.life_expectancy - a.life_expectancy;
+                });
+    
+                let topFive = data.slice(0, 5);
+
+                const barHeight = 20;
+                const barSpacing = 20; 
+                const totalBarsHeight = topFive.length * (barHeight + barSpacing) - barSpacing;
+                const startY = height - totalBarsHeight; 
+
+    
+                svg.selectAll("rect")
+                    .data(topFive)
+                    .enter()
+                    .append("rect")
+                    .attr("x", 0)
+                    .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
+                    .attr("width", d => x(d.life_expectancy))
+                    .attr("height", barHeight)
+                    .on("mouseenter", function(event, d) {
+                       d3.select(this)
+                         .transition()
+                         .duration(200)
+                         .style("fill", "#FF9C00");
+    
+                       d3.select(svg.node().parentNode)
+                         .append("text")
+                         .attr("class", "tooltip")
+                         .attr("x", event.x - margin.left)
+                         .attr("y", event.y - margin.top)
+                         .text(`Average life expectancy: ${d.life_expectancy}`);
+                   })
+                   .on("mouseout", function() {
+                       d3.select(this)
+                         .transition()
+                         .duration(200)
+                         .style("fill", "gold");
+    
+                       d3.selectAll(".tooltip").remove();
+                   });
+
+                svg.selectAll(".label")
+                   .data(topFive)
+                   .enter()
+                   .append("text")
+                   .attr("x", -5)
+                   .attr("y", (d, i) => startY + i * (barHeight + barSpacing) + barHeight / 2 + 5)
+                   .attr("text-anchor", "end")
+                   .text(d => d.country);
+            });
+        </script>
+    </body>
+    </HTML>
+    
