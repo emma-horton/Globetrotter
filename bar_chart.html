@@ -11,14 +11,13 @@
     
             /* Styling for rectangles (bars in the bar chart) */
             rect {
-                fill: gold;
                 stroke: black;
                 stroke-width: 2px;
             }
     
             /* Styling for tooltip text */
             .tooltip {
-                font-size: 20px;
+                font-size: 15px;
             }
     
             /* Styling for axis paths and lines */
@@ -70,149 +69,216 @@
     </head>
     <body>
         <!-- Page heading -->
-        <h2>Top 5 Countries by Life Expectancy</h2>
+        <h2>Top 5 Countries</h2>
         <!-- Container for the SVG visualization -->
+        <div id="buttonsContainer" style="text-align:center; margin-bottom: 20px;">
+            <button id="lifeExpectancyBtn">Life Expectancy</button>
+            <button id="genderEqualityBtn">Gender Equality</button>
+            <button id="gdpPerCapitaBtn">GDP Per Capita</button>
+            <button id="co2EmissionBtn">CO2 Emission Per Capita</button>
+        </div>
         <div id="myDiv">
             <svg></svg>
         </div>
         <div id="sliderContainer">
-            <label for="yearSlider">Year: <span id="sliderValue">1800</span></label>
+            <label for="yearSlider">Year: <span id="sliderValue"></span></label>
             <input type="range" id="yearSlider" min="1800" max="2024" value="1800" step="1">
         </div>
         
         <script>
+            function showLifeExpectancyData() {
+                console.log("Life Expectancy Data Shown");
+                let selectedData = 'reformatted_data/reformatted_life_expectancy.csv';
+                let selectedIndicator = 'life_expectancy'
+                let yLabel = 'Life Expectancy (years)'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1800;
+                document.getElementById("yearSlider").max = 2024;
+                let color = '#32CD32';
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+            }
+            
+            function showGenderEqualityData() {
+                console.log("Gender Equality Data Shown");
+                let selectedData = 'reformatted_data/reformatted_gender_equality.csv';
+                let selectedIndicator = 'gender_ratio_of_mean_years_in_school'
+                let yLabel = 'Gender Ratio of Mean Years in School'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1970;
+                document.getElementById("yearSlider").max = 2015;
+                let color = '#FFA500';
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+            }
+            
+            function showGdpPerCapitaData() {
+                console.log("GDP Per Capita Data Shown");
+                let selectedData = 'reformatted_data/reformatted_gdp.csv';
+                let selectedIndicator = 'gdp_per_capita'
+                let yLabel = 'GDP per capita (international dollars)'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1800;
+                document.getElementById("yearSlider").max = 2024;
+                let color = '#6495ED';
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+            }
+            
+            function showCo2EmissionData() {
+                console.log("CO2 Emission Data Shown");
+                'reformatted_data/reformatted_co2.csv'
+                let selectedData = 'reformatted_data/reformatted_co2.csv';
+                let selectedIndicator = 'co2_per_capita'
+                let yLabel = 'CO2 per capita (tonnes)'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1800;
+                document.getElementById("yearSlider").max = 2022;
+                let color = '#BA55D3';
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+            }
+            // Adding event listeners to buttons
+            document.getElementById("lifeExpectancyBtn").addEventListener("click", showLifeExpectancyData);
+            document.getElementById("genderEqualityBtn").addEventListener("click", showGenderEqualityData);
+            document.getElementById("gdpPerCapitaBtn").addEventListener("click", showGdpPerCapitaData);
+            document.getElementById("co2EmissionBtn").addEventListener("click", showCo2EmissionData);
             // Loading and processing the CSV data
-            d3.csv("reformatted_data/reformatted_life_expectancy.csv").then(function(data) {
-                // Setting margins and dimensions for the SVG canvas
-                const margin = {top: 10, right: 20, bottom: 50, left: 100},
-                      svgWidth = 960,
-                      svgHeight = 250,
-                      width = svgWidth - margin.left - margin.right,
-                      height = svgHeight - margin.top - margin.bottom;
-    
-                // Creating an SVG group element to offset the chart for the margins
-                const svg = d3.select("svg")
-                              .attr("width", svgWidth)
-                              .attr("height", svgHeight)
-                            .append("g")
-                              .attr("transform", `translate(${margin.left},${margin.top})`);
-    
-                // Defining the x-axis scale based on life expectancy data
-                const x = d3.scaleLinear()
-                            .domain([0, d3.max(data, d => +d.life_expectancy)])
-                            .range([0, width]);
-    
-                // Adding the bottom axis to the SVG group
-                svg.append("g")
-                   .attr("transform", `translate(0,${height})`)
-                   .call(d3.axisBottom(x));
-                   
-                // Adding label for the x-axis
-                svg.append("text")             
-                   .attr("transform",
-                         "translate(" + (width/2) + " ," + 
-                                        (height + margin.top + 20) + ")")
-                   .style("text-anchor", "middle")
-                   .text("Life Expectancy");
-    
-                // Adding label for the y-axis
-                svg.append("text")
-                   .attr("transform", "rotate(-90)")
-                   .attr("y", 0 - margin.left)
-                   .attr("x",0 - (height / 2))
-                   .attr("dy", "1em")
-                   .style("text-anchor", "middle")
-                   .text("Country"); 
-    
-                // Converting life expectancy data to numeric type
-                data.forEach(function(d) {
-                    d.life_expectancy = +d.life_expectancy;
-                });
-    
-                // Sorting data to get top five countries by life expectancy
-                data.sort(function(a, b) {
-                    return b.life_expectancy - a.life_expectancy;
-                });
-    
-                let topFive = data.slice(0, 5);
-                console.log(topFive)
-
-                // Calculating dimensions for bars in the bar chart
-                const barHeight = 20;
-                const barSpacing = 20; 
-                const totalBarsHeight = topFive.length * (barHeight + barSpacing) - barSpacing;
-                const startY = height - totalBarsHeight; 
-
-                d3.select("#yearSlider").on("input", function() {
-                    let year = this.value;
-                    console.log(year)
-                    d3.select("#sliderValue").text(year); // Update the label with the current year
-                    filterDataAndUpdateChart(year); // Function to update the chart
-                });
-                        
-
-                // Filter the data for the selected year
-                function filterDataAndUpdateChart(selectedYear) {
-                    let filteredData = data.filter(d => d.year === selectedYear);
-                    console.log(filteredData);
-                    updateTimeline(filteredData);
-                }
-
-                function updateTimeline(updatedData) {
-                    // Clear existing bars and tooltips
-                    svg.selectAll("rect").remove();
-                    console.log(svg.selectAll(".label").size());
-                    svg.selectAll(".label").remove();
-                    svg.selectAll(".tooltip").remove(); // Assuming tooltips are appended directly to SVG. Adjust if necessary.
-                
-                    // You may want to recalculate the top five here based on the updated data
-                    // Assuming updatedData is already filtered for the selected year
-                    let topFiveUpdated = updatedData.sort((a, b) => b.life_expectancy - a.life_expectancy).slice(0, 5);
-                    console.log(topFiveUpdated)
-
-                    // Redraw bars for the top five countries
-                    svg.selectAll("rect")
-                       .data(topFiveUpdated)
-                       .enter()
-                       .append("rect")
-                       .attr("x", 0)
-                       .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
-                       .attr("width", d => x(+d.life_expectancy))
-                       .attr("height", barHeight)
-                       .on("mouseenter", function(event, d) {
-                        d3.select(this)
-                          .transition()
-                          .duration(200)
-                          .style("fill", "#FF9C00");
-     
-                        d3.select(svg.node().parentNode)
-                          .append("text")
-                          .attr("class", "tooltip")
-                          .attr("x", event.x - margin.left)
-                          .attr("y", event.y - margin.top)
-                          .text(`Average life expectancy: ${d.life_expectancy}`);
-                    })
-                    .on("mouseout", function() {
-                        d3.select(this)
-                          .transition()
-                          .duration(200)
-                          .style("fill", "gold");
-     
-                        d3.selectAll(".tooltip").remove();
+            function loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color) { 
+                d3.csv(selectedData).then(function(data) {
+                    d3.select("svg").selectAll("*").remove();
+                    // Setting margins and dimensions for the SVG canvas
+                    const margin = {top: 10, right: 20, bottom: 50, left: 100},
+                        svgWidth = 960,
+                        svgHeight = 250,
+                        width = svgWidth - margin.left - margin.right,
+                        height = svgHeight - margin.top - margin.bottom;
+        
+                    // Creating an SVG group element to offset the chart for the margins
+                    const svg = d3.select("svg")
+                                .attr("width", svgWidth)
+                                .attr("height", svgHeight)
+                                .append("g")
+                                .attr("transform", `translate(${margin.left},${margin.top})`);
+        
+                    // Defining the x-axis scale based on life expectancy data
+                    const x = d3.scaleLinear()
+                                .domain([0, d3.max(data, d => +d[selectedIndicator])])
+                                .range([0, width]);
+        
+                    // Adding the bottom axis to the SVG group
+                    svg.append("g")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(x));
+                    
+                    // Adding label for the x-axis
+                    svg.append("text")             
+                    .attr("transform",
+                            "translate(" + (width/2) + " ," + 
+                                            (height + margin.top + 20) + ")")
+                    .style("text-anchor", "middle")
+                    .text(yLabel);
+        
+                    // Adding label for the y-axis
+                    svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0 - margin.left)
+                    .attr("x",0 - (height / 2))
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Country"); 
+        
+                    // Converting life expectancy data to numeric type
+                    data.forEach(function(d) {
+                        d[selectedIndicator] = +d[selectedIndicator];
                     });
-                
-                    // Adding country labels for the new bars
-                    svg.selectAll("text.label")
+        
+                    // Sorting data to get top five countries by life expectancy
+                    data.sort(function(a, b) {
+                        return b[selectedIndicator] - a[selectedIndicator];
+                    });
+        
+                    let topFive = data.slice(0, 5);
+                    console.log(topFive)
+
+                    // Calculating dimensions for bars in the bar chart
+                    const barHeight = 20;
+                    const barSpacing = 20; 
+                    const totalBarsHeight = topFive.length * (barHeight + barSpacing) - barSpacing;
+                    const startY = height - totalBarsHeight; 
+
+                    d3.select("#yearSlider").on("input", function() {
+                        let year = this.value;
+                        console.log(year)
+                        d3.select("#sliderValue").text(year); // Update the label with the current year
+                        filterDataAndUpdateChart(year); // Function to update the chart
+                    });
+                            
+
+                    // Filter the data for the selected year
+                    function filterDataAndUpdateChart(selectedYear) {
+                        let filteredData = data.filter(d => d.year === selectedYear);
+                        console.log(filteredData);
+                        updateTimeline(filteredData);
+                    }
+                    // set default year when indicator picked 
+                    filterDataAndUpdateChart('2015');
+                    // Set the slider's value
+                    document.getElementById("yearSlider").value = 2015;
+                    document.getElementById("sliderValue").innerText = 2015;
+
+                    function updateTimeline(updatedData) {
+                        // Clear existing bars and tooltips
+                        svg.selectAll("rect").remove();
+                        svg.selectAll(".label").remove();
+                        svg.selectAll(".tooltip").remove(); // Assuming tooltips are appended directly to SVG. Adjust if necessary.
+                    
+                        // You may want to recalculate the top five here based on the updated data
+                        // Assuming updatedData is already filtered for the selected year
+                        let topFiveUpdated = updatedData.sort((a, b) => b[selectedIndicator] - a[selectedIndicator]).slice(0, 5);
+                        console.log(topFiveUpdated)
+
+                        // Redraw bars for the top five countries
+                        svg.selectAll("rect")
                         .data(topFiveUpdated)
                         .enter()
-                        .append("text")
-                        .attr("class", "label")
-                        .attr("x", -5)
-                        .attr("y", (d, i) => startY + i * (barHeight + barSpacing) + barHeight / 2 + 5)
-                        .attr("text-anchor", "end")
-                        .text(d => d.country);
-                }       
-            });
+                        .append("rect")
+                        .attr("x", 0)
+                        .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
+                        .attr("width", d => x(+d[selectedIndicator]))
+                        .attr("height", barHeight) 
+                        .style("fill", color)
+                        .on("mouseenter", function(event, d) {
+                            d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .style("fill", "#D3D3D3");
+        
+                            d3.select(svg.node().parentNode)
+                            .append("text")
+                            .attr("class", "tooltip")
+                            .attr("x", event.x - margin.left - 50)
+                            .attr("y", event.y - margin.top - 50)
+                            .text(`Average ${yLabel}: ${d[selectedIndicator]}`);
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .style("fill", color);
+        
+                            d3.selectAll(".tooltip").remove();
+                        });
+                    
+                        // Adding country labels for the new bars
+                        svg.selectAll("text.label")
+                            .data(topFiveUpdated)
+                            .enter()
+                            .append("text")
+                            .attr("class", "label")
+                            .attr("x", -5)
+                            .attr("y", (d, i) => startY + i * (barHeight + barSpacing) + barHeight / 2 + 5)
+                            .attr("text-anchor", "end")
+                            .text(d => d.country);
+                    }   
+                });
+            }
         </script>
     </body>
 </HTML>
