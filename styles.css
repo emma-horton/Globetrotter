@@ -5,6 +5,12 @@ body {
     padding: 10px;
 }
 
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .startpage-background {
     background-image: url("images/pexels-globe.jpg");
     background-size: cover;
@@ -19,3 +25,22 @@ header {
     align-items: center;
     text-align: center;
 }
+
+.popup {
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    background-color: rgba(245, 245, 245, 0.5);
+    width: 500px;
+    height: auto;
+}
+
+#choose-indicator-optionlist {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+label {
+    display: inline-block;
+  }
