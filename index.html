@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <!-- Importing D3.js for data visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <title>Globetrotter</title>
 </head>
 <body>
@@ -19,19 +21,19 @@
             </div>
             <div id="choose-indicator-optionlist">
                 <div id="indicator-option-GDP">
-                    <input type="radio" id="option1" name="indicator-options" value="GDP per Capita" onclick="optionSelected('GDP per Capita')">
+                    <input type="radio" id="option1" name="indicator-options" value="GDP per Capita" onclick="optionSelected('GDP per Capita'); showGdpPerCapitaData();">
                     <label for="option1">GDP per Capita</label>
                 </div>
                 <div id="indicator-option-LifeEx">
-                    <input type="radio" id="option2" name="indicator-options" value="Life Expectancy" onclick="optionSelected('Life Expectancy')">
+                    <input type="radio" id="option2" name="indicator-options" value="Life Expectancy" onclick="optionSelected('Life Expectancy'); showLifeExpectancyData();">
                     <label for="option2">Life Expectancy</label>
                 </div>
                 <div id="indicator-option-emissions">
-                    <input type="radio" id="option3" name="indicator-options" value="CO2 Emissions per Capita" onclick="optionSelected('CO2 Emissions per Capita')">
+                    <input type="radio" id="option3" name="indicator-options" value="CO2 Emissions per Capita" onclick="optionSelected('CO2 Emissions per Capita'); showCo2EmissionData();">
                     <label for="option3">CO2 Emissions per Capita</label>
                 </div>
                 <div id="indicator-option-Equality">
-                    <input type="radio" id="option4" name="indicator-options" value="Gender Equality" onclick="optionSelected('Gender Equality')">
+                    <input type="radio" id="option4" name="indicator-options" value="Gender Equality" onclick="optionSelected('Gender Equality'); showGenderEqualityData();">
                     <label for="option4">Gender Equality</label>
                 </div>
             </div>
@@ -46,32 +48,38 @@
         </section>
 
         <!-- Dashboard header -->
-        <section class="popup" id="dashboard-header">
-            <div id="dashboard-header">
-                [Life Expectancy]
-            </div>
+        <section id="dashboard-header">
+            <h2 id="dahboard-heading"></h2>
             <div id="indicator-filter">
-                <div id="GDP">GDP per Capita</div>
-                <div id="LifeEx">Life Expectancy</div>
-                <div id="CO2">CO2 Emissions</div>
-                <div id="Equality">Gender Equality</div>
+                <button id="lifeExpectancyBtn">Life Expectancy</button>
+                <button id="genderEqualityBtn">Gender Equality</button>
+                <button id="gdpPerCapitaBtn">GDP per Capita</button>
+                <button id="co2EmissionBtn">CO2 Emission per Capita</button>
             </div>
         </section>
 
-        <!-- 1. dashboard: explora an indicator -->
-        <section id="indicator-dashboard-grid">
-            <div id="worldmap"></div>
-            <div id="top5"></div>
-            <div id="distribution"></div>
-            <div id="linegraph"></div>
+        <!-- 1. dashboard: explore an indicator -->
+        <section class="dashboard" id="indicator-dashboard-grid">
+            <div id="worldmap">
+                <h2>World Map</h2>
+            </div>
+            <div id="top5">
+                <h2>Top 5 Countries</h2>
+            </div>
+            <div id="distribution">
+                <h2>Distribution of Countries</h2>
+            </div>
+            <div id="linegraph">
+                <h2>Historical Development</h2>
+            </div>
         </section>
 
-        <!-- 2. dashboard: explora a country -->
-        <section id="country-dashboard-grid">
-            <div id="worldmap"></div>
-            <div id="indicators-against-worldAvg"></div>
-            <div id="distribution"></div>
-            <div id="linegraph"></div>
+        <!-- 2. dashboard: explore a country -->
+        <section class="dashboard" id="country-dashboard-grid">
+            <div id=""></div>
+            <div id=""></div>
+            <div id=""></div>
+            <div id=""></div>
         </section>
 
         <!-- Dashboard footer: timeslider and Navigation -->

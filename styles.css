@@ -2,11 +2,12 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: whitesmoke;
     margin: 0;
-    padding: 10px;
 }
 
 main {
     display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -43,4 +44,41 @@ header {
 
 label {
     display: inline-block;
-  }
+}
+
+.dashboard {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 4fr 3fr;
+    grid-template-rows: auto auto;
+}
+
+/* background colors for debugging */
+#worldmap {
+    background-color: lightblue;
+    grid-column: 1; /* first column */ 
+    grid-row: 1; /* first row */ 
+}
+
+#top5 {
+    background-color: lightcoral;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+#distribution {
+    background-color: lightgreen;
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#linegraph {
+    background-color: lightgoldenrodyellow;
+    grid-column: 2; 
+    grid-row: 2;
+}
+
+/* set specific height for all grid items */
+#worldmap, #top5, #distribution, #linegraph {
+    min-height: 350px;
+}
