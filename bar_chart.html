@@ -90,7 +90,7 @@
                 console.log("Life Expectancy Data Shown");
                 let selectedData = 'reformatted_data/reformatted_life_expectancy.csv';
                 let selectedIndicator = 'life_expectancy'
-                let yLabel = 'Life Expectancy (years)'
+                let yLabel = 'Average Life Expectancy (years)'
                 // set new min and max value for slider 
                 document.getElementById("yearSlider").min = 1800;
                 document.getElementById("yearSlider").max = 2024;
@@ -102,7 +102,7 @@
                 console.log("Gender Equality Data Shown");
                 let selectedData = 'reformatted_data/reformatted_gender_equality.csv';
                 let selectedIndicator = 'gender_ratio_of_mean_years_in_school'
-                let yLabel = 'Gender Ratio of Mean Years in School'
+                let yLabel = 'Average Gender Ratio of Mean Years in School'
                 // set new min and max value for slider 
                 document.getElementById("yearSlider").min = 1970;
                 document.getElementById("yearSlider").max = 2015;
@@ -255,7 +255,7 @@
                             .attr("class", "tooltip")
                             .attr("x", event.x - margin.left - 50)
                             .attr("y", event.y - margin.top - 50)
-                            .text(`Average ${yLabel}: ${d[selectedIndicator]}`);
+                            .text(`${yLabel}: ${d[selectedIndicator]}`);
                         })
                         .on("mouseout", function() {
                             d3.select(this)

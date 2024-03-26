@@ -9,12 +9,6 @@
                 height: auto;
             }
     
-            /* Styling for rectangles (bars in the bar chart) */
-            rect {
-                stroke: black;
-                stroke-width: 1px;
-            }
-    
             /* Styling for tooltip text */
             .tooltip {
                 font-size: 15px;
@@ -114,7 +108,7 @@
             
             function showGdpPerCapitaData() {
                 console.log("GDP Per Capita Data Shown");
-                let selectedData = 'reformatted_data/reformatted_gdp.csv';
+                let selectedData = 'reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv';
                 let selectedIndicator = 'gdp_per_capita'
                 let yLabel = 'GDP per capita (international dollars)'
                 // set new min and max value for slider 
@@ -128,14 +122,14 @@
             function showCo2EmissionData() {
                 console.log("CO2 Emission Data Shown");
                 'reformatted_data/reformatted_co2.csv'
-                let selectedData = 'reformatted_data/reformatted_co2.csv';
+                let selectedData = 'reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv';
                 let selectedIndicator = 'co2_per_capita'
                 let yLabel = 'CO2 per capita (tonnes)'
                 // set new min and max value for slider 
                 document.getElementById("yearSlider").min = 1800;
                 document.getElementById("yearSlider").max = 2022;
                 let color = '#BA55D3';
-                const binSize = 1;
+                const binSize = 0.25;
                 loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
             }
             // Adding event listeners to buttons
@@ -148,6 +142,7 @@
                 d3.csv(selectedData).then(function(data) {
                     console.log(data)
                     d3.select("svg").selectAll("*").remove();
+                    console.log(data)
 
                     data.forEach(function(d) {
                         d[selectedIndicator] = +d[selectedIndicator]; // '+' converts strings to numbers
@@ -177,16 +172,15 @@
                         height = svgHeight - margin.top - margin.bottom;
 
                     // Append the svg object to the div called 'histogram'
-                    const svg = d3.select("#histogram")
-                                .append("svg")
-                                    .attr("width", svgWidth)
-                                    .attr("height", svgHeight)
+
+                    const svg = d3.select("svg")
+                                .attr("width", svgWidth)
+                                .attr("height", svgHeight)
                                 .append("g")
-                                    .attr("transform",
-                                        "translate(" + margin.left + "," + margin.top + ")");
+                                .attr("transform", `translate(${margin.left},${margin.top})`);
+
                     const yAxisGroup = svg.append("g")
                                         .attr("class", "y-axis");
-
 
                     // X axis: scale and draw
                     const x = d3.scaleBand()
@@ -200,6 +194,30 @@
                                 .range([height, 0]);
                                 //svg.append("g")
                                 //.call(d3.axisLeft(y));
+                    svg.append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 0 - margin.left + 50)
+                        .attr("x",0 - (height / 2))
+                        .attr("dy", "1em")
+                        .style("text-anchor", "middle")
+                        .text("Number of Countries"); 
+
+                    // Add a fake X-axis to the chart
+                    const maxValue = d3.min(data, d => d[selectedIndicator]);
+                    const minValue = d3.max(data, d => d[selectedIndicator]);
+                    const fakeXScale = d3.scaleLinear()
+                        .domain([maxValue, minValue])
+                        .range([0, width]);
+                    svg.append("g")
+                        .attr("transform", `translate(0,${height})`)
+                        .call(d3.axisBottom(fakeXScale));
+                    svg.append("text")             
+                    .attr("transform",
+                            "translate(" + (width/2) + " ," + 
+                                            (height + margin.top + 20) + ")")
+                    .style("text-anchor", "middle")
+                    .text(yLabel);
+
                     // Plot bars
                     svg.selectAll(".rect")
                         .data(bins)
@@ -234,8 +252,7 @@
                         svg.selectAll("rect")
                             .remove();
                         console.log(filteredData)
-                        updatedData = removeOutliers(filteredData, selectedIndicator)
-                        //updatedData = filteredData;
+                        updatedData = filteredData;
                         console.log('Updated data: ', updatedData)
                     
                         updatedData.forEach(function(d) {
@@ -273,10 +290,6 @@
                         y.domain([0, d3.max(bins, d => d.length)]);
                         svg.select(".y-axis")
                             .call(d3.axisLeft(y));
-
-                        x.domain(bins.map((d, i) => `Bin ${i + 1}`));
-                        svg.select(".x-axis")
-                            .call(d3.axisBottom(x));
 
                     }
                     function removeOutliers(data, key) {
