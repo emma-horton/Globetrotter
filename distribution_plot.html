@@ -12,7 +12,7 @@
             /* Styling for rectangles (bars in the bar chart) */
             rect {
                 stroke: black;
-                stroke-width: 2px;
+                stroke-width: 1px;
             }
     
             /* Styling for tooltip text */
@@ -69,7 +69,7 @@
     </head>
     <body>
         <!-- Page heading -->
-        <h2>Top 5 Countries</h2>
+        <h2>Distrubution Plot</h2>
         <!-- Container for the SVG visualization -->
         <div id="buttonsContainer" style="text-align:center; margin-bottom: 20px;">
             <button id="lifeExpectancyBtn">Life Expectancy</button>
@@ -77,7 +77,7 @@
             <button id="gdpPerCapitaBtn">GDP Per Capita</button>
             <button id="co2EmissionBtn">CO2 Emission Per Capita</button>
         </div>
-        <div id="myDiv">
+        <div id="histogram">
             <svg></svg>
         </div>
         <div id="sliderContainer">
@@ -95,7 +95,8 @@
                 document.getElementById("yearSlider").min = 1800;
                 document.getElementById("yearSlider").max = 2024;
                 let color = '#32CD32';
-                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+                const binSize = 2.5;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
             }
             
             function showGenderEqualityData() {
@@ -107,7 +108,8 @@
                 document.getElementById("yearSlider").min = 1970;
                 document.getElementById("yearSlider").max = 2015;
                 let color = '#FFA500';
-                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+                const binSize = 2.5;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
             }
             
             function showGdpPerCapitaData() {
@@ -119,7 +121,8 @@
                 document.getElementById("yearSlider").min = 1800;
                 document.getElementById("yearSlider").max = 2024;
                 let color = '#6495ED';
-                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+                const binSize = 300;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
             }
             
             function showCo2EmissionData() {
@@ -132,7 +135,8 @@
                 document.getElementById("yearSlider").min = 1800;
                 document.getElementById("yearSlider").max = 2022;
                 let color = '#BA55D3';
-                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+                const binSize = 1;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
             }
             // Adding event listeners to buttons
             document.getElementById("lifeExpectancyBtn").addEventListener("click", showLifeExpectancyData);
@@ -140,76 +144,78 @@
             document.getElementById("gdpPerCapitaBtn").addEventListener("click", showGdpPerCapitaData);
             document.getElementById("co2EmissionBtn").addEventListener("click", showCo2EmissionData);
             // Loading and processing the CSV data
-            function loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color) { 
+            function loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize) { 
                 d3.csv(selectedData).then(function(data) {
+                    console.log(data)
                     d3.select("svg").selectAll("*").remove();
-                    // Setting margins and dimensions for the SVG canvas
+
+                    data.forEach(function(d) {
+                        d[selectedIndicator] = +d[selectedIndicator]; // '+' converts strings to numbers
+                    });
+                    const max = d3.max(data, d => d[selectedIndicator]);
+                    
+                    // Create bins
+                    const numBins = Math.ceil((max+1) / binSize);
+                    let bins = new Array(numBins).fill(0).map(() => []);
+                    
+                    // Assign data to bins
+                    data.forEach(function(d) {
+                        const index = Math.floor(d[selectedIndicator] / binSize);
+                        if (index >= 0 && index < bins.length) {
+                            bins[index].push(d);
+                        } else {
+                            console.log('error creating bin')
+                        }
+                    });
+                    console.log(bins);
+
+                    // Set the dimensions and margins of the graph
                     const margin = {top: 10, right: 20, bottom: 50, left: 100},
                         svgWidth = 960,
                         svgHeight = 250,
                         width = svgWidth - margin.left - margin.right,
                         height = svgHeight - margin.top - margin.bottom;
-        
-                    // Creating an SVG group element to offset the chart for the margins
-                    const svg = d3.select("svg")
-                                .attr("width", svgWidth)
-                                .attr("height", svgHeight)
+
+                    // Append the svg object to the div called 'histogram'
+                    const svg = d3.select("#histogram")
+                                .append("svg")
+                                    .attr("width", svgWidth)
+                                    .attr("height", svgHeight)
                                 .append("g")
-                                .attr("transform", `translate(${margin.left},${margin.top})`);
-        
-                    // Defining the x-axis scale based on life expectancy data
-                    const x = d3.scaleLinear()
-                                .domain([0, d3.max(data, d => +d[selectedIndicator])])
-                                .range([0, width]);
-        
-                    // Adding the bottom axis to the SVG group
-                    svg.append("g")
-                    .attr("transform", `translate(0,${height})`)
-                    .call(d3.axisBottom(x));
+                                    .attr("transform",
+                                        "translate(" + margin.left + "," + margin.top + ")");
+                    const yAxisGroup = svg.append("g")
+                                        .attr("class", "y-axis");
+
+
+                    // X axis: scale and draw
+                    const x = d3.scaleBand()
+                                .range([0, width])
+                                .domain(bins.map((d, i) => `Bin ${i + 1}`)) // Creating a label for each bin
+                                .padding(0.1)
                     
-                    // Adding label for the x-axis
-                    svg.append("text")             
-                    .attr("transform",
-                            "translate(" + (width/2) + " ," + 
-                                            (height + margin.top + 20) + ")")
-                    .style("text-anchor", "middle")
-                    .text(yLabel);
-        
-                    // Adding label for the y-axis
-                    svg.append("text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("y", 0 - margin.left)
-                    .attr("x",0 - (height / 2))
-                    .attr("dy", "1em")
-                    .style("text-anchor", "middle")
-                    .text("Country"); 
-        
-                    // Converting life expectancy data to numeric type
-                    data.forEach(function(d) {
-                        d[selectedIndicator] = +d[selectedIndicator];
-                    });
-        
-                    // Sorting data to get top five countries by life expectancy
-                    data.sort(function(a, b) {
-                        return b[selectedIndicator] - a[selectedIndicator];
-                    });
-        
-                    let topFive = data.slice(0, 5);
-                    console.log(topFive)
-
-                    // Calculating dimensions for bars in the bar chart
-                    const barHeight = 20;
-                    const barSpacing = 20; 
-                    const totalBarsHeight = topFive.length * (barHeight + barSpacing) - barSpacing;
-                    const startY = height - totalBarsHeight; 
-
+                    // Y axis: scale and draw
+                    const y = d3.scaleLinear()
+                                .domain([0, d3.max(bins, d => d.length)])
+                                .range([height, 0]);
+                                //svg.append("g")
+                                //.call(d3.axisLeft(y));
+                    // Plot bars
+                    svg.selectAll(".rect")
+                        .data(bins)
+                        .join("rect")
+                            .attr("x", (d, i) => x(`Bin ${i + 1}`))
+                            .attr("y", d => y(d.length))
+                            .attr("width", x.bandwidth())
+                            .attr("height", d => height - y(d.length))
+                            .style("fill", color);
+                    
                     d3.select("#yearSlider").on("input", function() {
                         let year = this.value;
                         console.log(year)
                         d3.select("#sliderValue").text(year); // Update the label with the current year
                         filterDataAndUpdateChart(year); // Function to update the chart
                     });
-                            
 
                     // Filter the data for the selected year
                     function filterDataAndUpdateChart(selectedYear) {
@@ -223,61 +229,74 @@
                     document.getElementById("yearSlider").value = 2015;
                     document.getElementById("sliderValue").innerText = 2015;
 
-                    function updateTimeline(updatedData) {
-                        // Clear existing bars and tooltips
-                        svg.selectAll("rect").remove();
-                        svg.selectAll(".label").remove();
-                        svg.selectAll(".tooltip").remove(); // Assuming tooltips are appended directly to SVG. Adjust if necessary.
-                    
-                        // You may want to recalculate the top five here based on the updated data
-                        // Assuming updatedData is already filtered for the selected year
-                        let topFiveUpdated = updatedData.sort((a, b) => b[selectedIndicator] - a[selectedIndicator]).slice(0, 5);
-                        console.log(topFiveUpdated)
-
-                        // Redraw bars for the top five countries
+                    function updateTimeline(filteredData) {
+                        // Clear existing bars
                         svg.selectAll("rect")
-                        .data(topFiveUpdated)
-                        .enter()
-                        .append("rect")
-                        .attr("x", 0)
-                        .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
-                        .attr("width", d => x(+d[selectedIndicator]))
-                        .attr("height", barHeight) 
-                        .style("fill", color)
-                        .on("mouseenter", function(event, d) {
-                            d3.select(this)
-                            .transition()
-                            .duration(200)
-                            .style("fill", "#D3D3D3");
-        
-                            d3.select(svg.node().parentNode)
-                            .append("text")
-                            .attr("class", "tooltip")
-                            .attr("x", event.x - margin.left - 50)
-                            .attr("y", event.y - margin.top - 50)
-                            .text(`Average ${yLabel}: ${d[selectedIndicator]}`);
-                        })
-                        .on("mouseout", function() {
-                            d3.select(this)
-                            .transition()
-                            .duration(200)
-                            .style("fill", color);
-        
-                            d3.selectAll(".tooltip").remove();
-                        });
+                            .remove();
+                        console.log(filteredData)
+                        updatedData = removeOutliers(filteredData, selectedIndicator)
+                        //updatedData = filteredData;
+                        console.log('Updated data: ', updatedData)
                     
-                        // Adding country labels for the new bars
-                        svg.selectAll("text.label")
-                            .data(topFiveUpdated)
-                            .enter()
-                            .append("text")
-                            .attr("class", "label")
-                            .attr("x", -5)
-                            .attr("y", (d, i) => startY + i * (barHeight + barSpacing) + barHeight / 2 + 5)
-                            .attr("text-anchor", "end")
-                            .text(d => d.country);
-                    }   
+                        updatedData.forEach(function(d) {
+                            d[selectedIndicator] = +d[selectedIndicator]; // '+' converts strings to numbers
+                        });
+                        const max = d3.max(updatedData, d => d[selectedIndicator]);
+                        
+                        // Create bins
+                        const numBins = Math.ceil((max + 1) / binSize);
+                        let bins = new Array(numBins).fill(0).map(() => []);
+                        
+                        // Assign data to bins
+                        updatedData.forEach(function(d) {
+                            const index = Math.floor(d[selectedIndicator] / binSize);
+                            if (index >= 0 && index < bins.length) {
+                                bins[index].push(d);
+                            } else {
+                                console.log('error creating bin')
+                            }
+                        });
+                        console.log('bins')
+                        console.log(bins);
+                    
+
+                        // Plot bars
+                        svg.selectAll(".rect")
+                            .data(bins)
+                            .join("rect")
+                                .attr("x", (d, i) => x(`Bin ${i + 1}`))
+                                .attr("y", d => y(d.length))
+                                .attr("width", x.bandwidth())
+                                .attr("height", d => height - y(d.length))
+                                .style("fill", color);
+                        
+                        y.domain([0, d3.max(bins, d => d.length)]);
+                        svg.select(".y-axis")
+                            .call(d3.axisLeft(y));
+
+                        x.domain(bins.map((d, i) => `Bin ${i + 1}`));
+                        svg.select(".x-axis")
+                            .call(d3.axisBottom(x));
+
+                    }
+                    function removeOutliers(data, key) {
+                        data.sort((a, b) => a[key] - b[key]);
+                    
+                        const q1Index = Math.floor(data.length / 4);
+                        const q3Index = Math.floor(data.length * (3 / 4));
+                        const q1 = data[q1Index][key];
+                        const q3 = data[q3Index][key];
+                        const iqr = q3 - q1;
+                    
+                        const lowerBound = q1 - 1.5 * iqr;
+                        const upperBound = q3 + 1.5 * iqr;
+                    
+                        // Filtering the data to remove outliers
+                        return data.filter(d => d[key] >= lowerBound && d[key] <= upperBound);
+                    }
+
                 });
+                    
             }
         </script>
     </body>
