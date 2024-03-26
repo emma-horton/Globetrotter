@@ -1,22 +1,27 @@
 <HTML>
     <head>
+        <!-- Importing D3.js for data visualization -->
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <style>
+            /* Setting the width and height for html, body, div, and svg elements to occupy full page */
             html, body, div, svg {
                 width: 100%;
                 height: 100%;
             }
     
+            /* Styling for rectangles (bars in the bar chart) */
             rect {
                 fill: gold;
                 stroke: black;
                 stroke-width: 2px;
             }
     
+            /* Styling for tooltip text */
             .tooltip {
-                font-size: 15px;
+                font-size: 20px;
             }
     
+            /* Styling for axis paths and lines */
             .axis path,
             .axis line {
                 fill: none;
@@ -24,44 +29,55 @@
                 shape-rendering: crispEdges;
             }
     
+            /* Styling for axis labels */
             .axis text {
                 font-size: 10px;
             }
         </style>
     </head>
     <body>
-        <h2>D3 Visual Elements</h2>
+        <!-- Page heading -->
+        <h2>Top 5 Countries by Life Expectancy</h2>
+        <!-- Container for the SVG visualization -->
         <div id="myDiv">
             <svg></svg>
         </div>
         <script>
+            // Loading and processing the CSV data
             d3.csv("reformatted_data/reformatted_life_expectancy.csv").then(function(data) {
+                // Setting margins and dimensions for the SVG canvas
                 const margin = {top: 10, right: 20, bottom: 30, left: 100},
                       svgWidth = 960,
                       svgHeight = 250,
                       width = svgWidth - margin.left - margin.right,
                       height = svgHeight - margin.top - margin.bottom;
     
+                // Creating an SVG group element to offset the chart for the margins
                 const svg = d3.select("svg")
                               .attr("width", svgWidth)
                               .attr("height", svgHeight)
                             .append("g")
                               .attr("transform", `translate(${margin.left},${margin.top})`);
     
+                // Defining the x-axis scale based on life expectancy data
                 const x = d3.scaleLinear()
                             .domain([0, d3.max(data, d => +d.life_expectancy)])
                             .range([0, width]);
     
+                // Adding the bottom axis to the SVG group
                 svg.append("g")
                    .attr("transform", `translate(0,${height})`)
                    .call(d3.axisBottom(x));
-                   svg.append("text")             
+                   
+                // Adding label for the x-axis
+                svg.append("text")             
                    .attr("transform",
                          "translate(" + (width/2) + " ," + 
                                         (height + margin.top + 20) + ")")
                    .style("text-anchor", "middle")
                    .text("Life Expectancy");
     
+                // Adding label for the y-axis
                 svg.append("text")
                    .attr("transform", "rotate(-90)")
                    .attr("y", 0 - margin.left)
@@ -70,62 +86,126 @@
                    .style("text-anchor", "middle")
                    .text("Country"); 
     
+                // Converting life expectancy data to numeric type
                 data.forEach(function(d) {
                     d.life_expectancy = +d.life_expectancy;
                 });
     
+                // Sorting data to get top five countries by life expectancy
                 data.sort(function(a, b) {
                     return b.life_expectancy - a.life_expectancy;
                 });
     
                 let topFive = data.slice(0, 5);
+                console.log(topFive)
 
+                // Calculating dimensions for bars in the bar chart
                 const barHeight = 20;
                 const barSpacing = 20; 
                 const totalBarsHeight = topFive.length * (barHeight + barSpacing) - barSpacing;
                 const startY = height - totalBarsHeight; 
+                    
 
-    
-                svg.selectAll("rect")
-                    .data(topFive)
+                // add div for drop down menu 
+                d3.select('body')
+                .append('div')
+                .attr('id', 'dropDownMenu');
+                
+                // extract unique years 
+                let groupedByYear = data.reduce((acc, d) => {
+                    const year = d.year;
+                    if (!acc[year]) {
+                        acc[year] = [];
+                    }
+                    acc[year].push(d);
+                    return acc;
+                }, {});
+                let years = Object.keys(groupedByYear).sort();
+            
+                console.log(groupedByYear);
+
+                // Creating a dropdown menu with years
+                let dropDownMenu = d3.select('#dropDownMenu');
+                let select = dropDownMenu.append('select');
+                select.selectAll('option')
+                    .data(years) // Binding the years array
                     .enter()
-                    .append("rect")
-                    .attr("x", 0)
-                    .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
-                    .attr("width", d => x(d.life_expectancy))
-                    .attr("height", barHeight)
-                    .on("mouseenter", function(event, d) {
-                       d3.select(this)
-                         .transition()
-                         .duration(200)
-                         .style("fill", "#FF9C00");
-    
-                       d3.select(svg.node().parentNode)
-                         .append("text")
-                         .attr("class", "tooltip")
-                         .attr("x", event.x - margin.left)
-                         .attr("y", event.y - margin.top)
-                         .text(`Average life expectancy: ${d.life_expectancy}`);
-                   })
-                   .on("mouseout", function() {
-                       d3.select(this)
-                         .transition()
-                         .duration(200)
-                         .style("fill", "gold");
-    
-                       d3.selectAll(".tooltip").remove();
-                   });
+                    .append('option')
+                        .attr('value', d => d)
+                        .text(d => d);  
+                dropDownMenu
+                        .on('change', function(e,d){
+                            let menuItem = d3.select(this)
+                                                 .select('select')
+                                                 .property('value');
+                            console.log(menuItem);
+                            filterDataAndUpdateChart(menuItem);
+                        })
 
-                svg.selectAll(".label")
-                   .data(topFive)
-                   .enter()
-                   .append("text")
-                   .attr("x", -5)
-                   .attr("y", (d, i) => startY + i * (barHeight + barSpacing) + barHeight / 2 + 5)
-                   .attr("text-anchor", "end")
-                   .text(d => d.country);
+                // Filter the data for the selected year
+                function filterDataAndUpdateChart(selectedYear) {
+                    let filteredData = data.filter(d => d.year === selectedYear);
+                    console.log(filteredData);
+                    updateTimeline(filteredData);
+                }
+
+                function updateTimeline(updatedData) {
+                    // Clear existing bars and tooltips
+                    svg.selectAll("rect").remove();
+                    console.log(svg.selectAll(".label").size());
+                    svg.selectAll(".label").remove();
+                    svg.selectAll(".tooltip").remove(); // Assuming tooltips are appended directly to SVG. Adjust if necessary.
+                
+                    // You may want to recalculate the top five here based on the updated data
+                    // Assuming updatedData is already filtered for the selected year
+                    let topFiveUpdated = updatedData.sort((a, b) => b.life_expectancy - a.life_expectancy).slice(0, 5);
+                    console.log(topFiveUpdated)
+
+                    // Redraw bars for the top five countries
+                    svg.selectAll("rect")
+                       .data(topFiveUpdated)
+                       .enter()
+                       .append("rect")
+                       .attr("x", 0)
+                       .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
+                       .attr("width", d => x(+d.life_expectancy))
+                       .attr("height", barHeight)
+                       .on("mouseenter", function(event, d) {
+                        d3.select(this)
+                          .transition()
+                          .duration(200)
+                          .style("fill", "#FF9C00");
+     
+                        d3.select(svg.node().parentNode)
+                          .append("text")
+                          .attr("class", "tooltip")
+                          .attr("x", event.x - margin.left)
+                          .attr("y", event.y - margin.top)
+                          .text(`Average life expectancy: ${d.life_expectancy}`);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                          .transition()
+                          .duration(200)
+                          .style("fill", "gold");
+     
+                        d3.selectAll(".tooltip").remove();
+                    });
+                
+                    // Adding country labels for the new bars
+                    svg.selectAll("text.label")
+                        .data(topFiveUpdated)
+                        .enter()
+                        .append("text")
+                        .attr("class", "label")
+                        .attr("x", -5)
+                        .attr("y", (d, i) => startY + i * (barHeight + barSpacing) + barHeight / 2 + 5)
+                        .attr("text-anchor", "end")
+                        .text(d => d.country);
+                }      
+                filterDataAndUpdateChart('2024.0');    
             });
         </script>
     </body>
-    </HTML>
+</HTML>
     
