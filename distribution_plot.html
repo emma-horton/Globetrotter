@@ -138,7 +138,8 @@
             document.getElementById("gdpPerCapitaBtn").addEventListener("click", showGdpPerCapitaData);
             document.getElementById("co2EmissionBtn").addEventListener("click", showCo2EmissionData);
             // Loading and processing the CSV data
-            function loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize) { 
+            
+            function loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize, selectedYear=2015) { 
                 d3.csv(selectedData).then(function(data) {
                     console.log(data)
                     d3.select("svg").selectAll("*").remove();
@@ -228,24 +229,19 @@
                             .attr("height", d => height - y(d.length))
                             .style("fill", color);
                     
-                    d3.select("#yearSlider").on("input", function() {
-                        let year = this.value;
-                        console.log(year)
-                        d3.select("#sliderValue").text(year); // Update the label with the current year
-                        filterDataAndUpdateChart(year); // Function to update the chart
-                    });
-
+                    filterDataAndUpdateChart(2015);
+                    
                     // Filter the data for the selected year
                     function filterDataAndUpdateChart(selectedYear) {
-                        let filteredData = data.filter(d => d.year === selectedYear);
+                        let filteredData = data.filter(d => d.year == selectedYear);
                         console.log(filteredData);
                         updateTimeline(filteredData);
                     }
                     // set default year when indicator picked 
-                    filterDataAndUpdateChart('2015');
+                    filterDataAndUpdateChart(selectedYear);
                     // Set the slider's value
-                    document.getElementById("yearSlider").value = 2015;
-                    document.getElementById("sliderValue").innerText = 2015;
+                    document.getElementById("yearSlider").value = selectedYear;
+                    document.getElementById("sliderValue").innerText = selectedYear;
 
                     function updateTimeline(filteredData) {
                         // Clear existing bars
@@ -291,21 +287,6 @@
                         svg.select(".y-axis")
                             .call(d3.axisLeft(y));
 
-                    }
-                    function removeOutliers(data, key) {
-                        data.sort((a, b) => a[key] - b[key]);
-                    
-                        const q1Index = Math.floor(data.length / 4);
-                        const q3Index = Math.floor(data.length * (3 / 4));
-                        const q1 = data[q1Index][key];
-                        const q3 = data[q3Index][key];
-                        const iqr = q3 - q1;
-                    
-                        const lowerBound = q1 - 1.5 * iqr;
-                        const upperBound = q3 + 1.5 * iqr;
-                    
-                        // Filtering the data to remove outliers
-                        return data.filter(d => d[key] >= lowerBound && d[key] <= upperBound);
                     }
 
                 });
