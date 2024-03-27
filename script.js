@@ -342,7 +342,7 @@ function loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, 
 }
 
 // ---------------------------------------------------------------- Distribution Plot ------------------------------------------------------------------------------
-function loadAndUpdateDistributionChart(selectedData, selectedIndicator, yLabel, color, binSize, selectedYear) { 
+function loadAndUpdateDistributionChart(selectedData, selectedIndicator, yLabel, color, binSize, selectedYear, specifiedCountry="USA") { 
     d3.csv(selectedData).then(function(data) {
         console.log(data)
         d3.select("#distribution").select("svg").remove();
@@ -488,7 +488,25 @@ function loadAndUpdateDistributionChart(selectedData, selectedIndicator, yLabel,
                 .call(d3.axisLeft(y));
 
         }
-
+        // Creates arrow pointing to specific position of a country on plot 
+        if (specifiedCountry !== 'any') {
+            const pointValue = findLifeExpectancyForYear(specifiedCountry)
+            console.log(pointValue)
+            if (pointValue != null) {
+                const arrowXPosition = fakeXScale(pointValue);
+                const arrowYPosition = height; 
+                const arrowPath = "M0,0 L10,0 L5,10 L0,0"; 
+                svg.append("path")
+                .attr("d", arrowPath)
+                .attr("fill", "red") 
+                .attr("transform", `translate(${arrowXPosition - 5}, ${arrowYPosition})`); 
+            }
+        }
+        function findLifeExpectancyForYear(country) {
+            const entry = updatedData.find(d => d.country === country);
+            return entry ? entry[selectedIndicator] : null;
+        }
+        
     });
         
 }
