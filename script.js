@@ -1,3 +1,5 @@
+// selected indicator is a global variable 
+var selectedIndicator;
 // Display different views
 function displayStartPage() {
     document.body.classList.add("startpage-background");
@@ -57,61 +59,61 @@ function optionSelected(value) {
 
 
 
-function showLifeExpectancyData() {
+function showLifeExpectancyData(year=2015) {
     console.log("Life Expectancy Data Shown");
     let selectedData = 'reformatted_data/reformatted_life_expectancy.csv';
-    let selectedIndicator = 'life_expectancy'
+    selectedIndicator = 'life_expectancy'
     let yLabel = 'Life Expectancy (years)'
     let color = '#32CD32';
     const binSize = 2.5;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2024;
     loadAndUpdateLineChart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', selectedIndicator, yLabel, color, binSize)
+    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, year);
+    loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', selectedIndicator, yLabel, color, binSize, year)
 }
 
-function showGenderEqualityData() {
+function showGenderEqualityData(year=2015) {
     console.log("Gender Equality Data Shown");
     let selectedData = 'reformatted_data/reformatted_gender_equality.csv';
-    let selectedIndicator = 'gender_ratio_of_mean_years_in_school'
+    selectedIndicator = 'gender_ratio_of_mean_years_in_school'
     let yLabel = 'Gender Ratio of Mean Years in School'
     let color = '#FFA500';
     const binSize = 2.5;
     document.getElementById("yearSlider").min = 1970;
     document.getElementById("yearSlider").max = 2015;
     loadAndUpdateLineChart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateDistributionChart('reformatted_data/reformatted_gender_equality.csv', selectedIndicator, yLabel, color, binSize)
+    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, year);
+    loadAndUpdateDistributionChart('reformatted_data/reformatted_gender_equality.csv', selectedIndicator, yLabel, color, binSize, year)
 }
 
-function showGdpPerCapitaData() {
+function showGdpPerCapitaData(year=2015) {
     console.log("GDP Per Capita Data Shown");
     let selectedData = 'reformatted_data/reformatted_gdp.csv';
-    let selectedIndicator = 'gdp_per_capita'
+    selectedIndicator = 'gdp_per_capita'
     let yLabel = 'GDP per capita (international dollars)'
     let color = '#6495ED';
     const binSize = 300;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2024;
     loadAndUpdateLineChart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv', selectedIndicator, yLabel, color, binSize)
+    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, year);
+    loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv', selectedIndicator, yLabel, color, binSize, year)
 }
 
-function showCo2EmissionData() {
+function showCo2EmissionData(year=2015) {
     console.log("CO2 Emission Data Shown");
     'reformatted_data/reformatted_co2.csv'
-    let selectedData = 'reformatted_data/reformatted_co2.csv';
-    let selectedIndicator = 'co2_per_capita'
+    let selectedData = 'reformatted_data/reformatted_CO2.csv';
+    selectedIndicator = 'co2_per_capita'
     let yLabel = 'CO2 per capita (tonnes)'
     let color = '#BA55D3';
     const binSize = 0.25;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2022;
     loadAndUpdateLineChart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color);
-    loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv', selectedIndicator, yLabel, color, binSize)
+    loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, year);
+    loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv', selectedIndicator, yLabel, color, binSize, year)
 }
 // Adding event listeners to buttons
 document.getElementById("lifeExpectancyBtn").addEventListener("click", function() {showLifeExpectancyData(); optionSelected("Life Expectancy")});
@@ -215,7 +217,7 @@ function loadAndUpdateLineChart(selectedData, selectedIndicator, yLabel, color) 
 
 // -------------------------------------------------------------- Top 5 Bar Chart -----------------------------------------------------------------------------
 
-function loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color) { 
+function loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, selectedYear) { 
     d3.csv(selectedData).then(function(data) {
         d3.select("#top5").select("svg").remove();
         // Setting margins and dimensions for the SVG canvas
@@ -279,33 +281,16 @@ function loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color) 
         const totalBarsHeight = topFive.length * (barHeight + barSpacing) - barSpacing;
         const startY = height - totalBarsHeight; 
 
-        d3.select("#yearSlider").on("input", function() {
-            let year = this.value;
-            console.log(year)
-            d3.select("#sliderValue").text(year); // Update the label with the current year
-            filterDataAndUpdateTop5Chart(year); // Function to update the chart
-        });
- 
+        filterDataAndUpdateTop5Chart(selectedYear);
         // Filter the data for the selected year
         function filterDataAndUpdateTop5Chart(selectedYear) {
             let filteredData = data.filter(d => d.year === selectedYear);
             console.log(filteredData);
             updateTop5Timeline(filteredData);
         }
-        // set default year when indicator picked 
-        filterDataAndUpdateTop5Chart('2015');
-        // Set the slider's value
-        document.getElementById("yearSlider").value = 2015;
-        document.getElementById("sliderValue").innerText = 2015;
+
 
         function updateTop5Timeline(updatedData) {
-            // Clear existing bars and tooltips
-            svg.selectAll("rect.rect-top5").remove()
-            svg.selectAll(".label").remove();
-            svg.selectAll(".tooltip").remove(); // Assuming tooltips are appended directly to SVG. Adjust if necessary.
-        
-            // You may want to recalculate the top five here based on the updated data
-            // Assuming updatedData is already filtered for the selected year
             let topFiveUpdated = updatedData.sort((a, b) => b[selectedIndicator] - a[selectedIndicator]).slice(0, 5);
             console.log(topFiveUpdated)
 
@@ -357,9 +342,8 @@ function loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color) 
 }
 
 // ---------------------------------------------------------------- Distribution Plot ------------------------------------------------------------------------------
-// Loading and processing the CSV data
-function loadAndUpdateDistributionChart(selectedDataOutliersRemoved, selectedIndicator, yLabel, color, binSize) { 
-    d3.csv(selectedDataOutliersRemoved).then(function(data) {
+function loadAndUpdateDistributionChart(selectedData, selectedIndicator, yLabel, color, binSize, selectedYear) { 
+    d3.csv(selectedData).then(function(data) {
         console.log(data)
         d3.select("#distribution").select("svg").remove();
         console.log(data)
@@ -413,8 +397,7 @@ function loadAndUpdateDistributionChart(selectedDataOutliersRemoved, selectedInd
         const y = d3.scaleLinear()
                     .domain([0, d3.max(bins, d => d.length)])
                     .range([height, 0]);
-                    //svg.append("g")
-                    //.call(d3.axisLeft(y));
+
         svg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 0 - margin.left + 50)
@@ -440,40 +423,30 @@ function loadAndUpdateDistributionChart(selectedDataOutliersRemoved, selectedInd
         .text(yLabel);
 
         // Plot bars
-        svg.selectAll(".rect-distribution")
+        svg.selectAll(".rect")
             .data(bins)
-            .enter()
-            .append("rect")
-            .attr("class", "rect-distribution")
-            .attr("x", (d, i) => x(`Bin ${i + 1}`))
-            .attr("y", d => y(d.length))
-            .attr("width", x.bandwidth())
-            .attr("height", d => height - y(d.length))
-            .style("fill", color);
-
-        d3.select("#yearSlider").on("input", function() {
-            let year = this.value;
-            console.log(year)
-            d3.select("#sliderValue").text(year); // Update the label with the current year
-            filterDataAndUpdateDistributionChart(year); // Function to update the chart
-        });
-
-
+            .join("rect")
+                .attr("x", (d, i) => x(`Bin ${i + 1}`))
+                .attr("y", d => y(d.length))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.length))
+                .style("fill", color);
+        
+        filterDataAndUpdateChart(selectedYear);
+        
         // Filter the data for the selected year
-        function filterDataAndUpdateDistributionChart(selectedYear) {
-            let filteredData = data.filter(d => d.year === selectedYear);
+        function filterDataAndUpdateChart(selectedYear) {
+            let filteredData = data.filter(d => d.year == selectedYear);
             console.log(filteredData);
-            updateDistributionTimeline(filteredData);
+            updateTimeline(filteredData);
         }
         // set default year when indicator picked 
-        filterDataAndUpdateDistributionChart('2015');
+        filterDataAndUpdateChart(selectedYear);
         // Set the slider's value
-        document.getElementById("yearSlider").value = 2015;
-        document.getElementById("sliderValue").innerText = 2015;
+        document.getElementById("yearSlider").value = selectedYear;
+        document.getElementById("sliderValue").innerText = selectedYear;
 
-        function updateDistributionTimeline(filteredData) {
-            // Clear existing bars
-            svg.selectAll("rect.rect-distribution").remove()
+        function updateTimeline(filteredData) {
             console.log(filteredData)
             updatedData = filteredData;
             console.log('Updated data: ', updatedData)
@@ -501,17 +474,14 @@ function loadAndUpdateDistributionChart(selectedDataOutliersRemoved, selectedInd
         
 
             // Plot bars
-            svg.selectAll(".rect-distribution")
+            svg.selectAll(".rect")
                 .data(bins)
-                .enter()
-                .append("rect")
-                .attr("class", "rect-distribution")
-                .attr("x", (d, i) => x(`Bin ${i + 1}`))
-                .attr("y", d => y(d.length))
-                .attr("width", x.bandwidth())
-                .attr("height", d => height - y(d.length))
-                .style("fill", color);
-
+                .join("rect")
+                    .attr("x", (d, i) => x(`Bin ${i + 1}`))
+                    .attr("y", d => y(d.length))
+                    .attr("width", x.bandwidth())
+                    .attr("height", d => height - y(d.length))
+                    .style("fill", color);
             
             y.domain([0, d3.max(bins, d => d.length)]);
             svg.select(".y-axis")
@@ -522,14 +492,22 @@ function loadAndUpdateDistributionChart(selectedDataOutliersRemoved, selectedInd
     });
         
 }
-/*
+
+
 document.getElementById("yearSlider").addEventListener("input", function() {
     let year = this.value;
     console.log(year);
     d3.select("#sliderValue").text(year); // Update the label with the current year
 
     // Call multiple functions within a single listener
-    filterDataAndUpdateTop5Chart(year);
-    filterDataAndUpdateDistributionChart(year);
+    if (selectedIndicator  == 'life_expectancy') {
+        showLifeExpectancyData(year)
+    } else if (selectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+        showGenderEqualityData(year)
+    } else if (selectedIndicator  == 'gdp_per_capita') {
+        showGdpPerCapitaData(year)
+
+    } else if (selectedIndicator  == 'co2_per_capita') {
+        showCo2EmissionData(year)
+    }
 });
-*/
