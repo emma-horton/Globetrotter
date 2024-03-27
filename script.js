@@ -284,7 +284,7 @@ function loadAndUpdateTop5Chart(selectedData, selectedIndicator, yLabel, color, 
         filterDataAndUpdateTop5Chart(selectedYear);
         // Filter the data for the selected year
         function filterDataAndUpdateTop5Chart(selectedYear) {
-            let filteredData = data.filter(d => d.year === selectedYear);
+            let filteredData = data.filter(d => d.year == selectedYear);
             console.log(filteredData);
             updateTop5Timeline(filteredData);
         }
