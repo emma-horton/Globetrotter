@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<!--D3.js library v.7-->
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+
+
+	<style>
+		#map {
+			position: relative;
+			z-index: 0;
+			width: 100%;
+			height: 500px;
+		}
+
+		.infobox {
+			font-size: large;
+			font-family: sans-serif;
+			text-transform: capitalize;
+		}
+	</style>
+
+
+	<title>D3 Tutorial</title>
+</head>
+
+<body>
+	<h2>World Map</h2>
+
+	<!-- a DIV container with id "map"-->
+	<div id="map"></div>
+
+	<script>
+        // loadAndUpdateWorldMap(selectedData, selectedIndicator, color)
+
+        // function loadAndUpdateWorldMap(selectedData, selectedIndicator, color) {
+
+            (async () => {
+                // token
+                let YOUR_TOKEN = "pk.eyJ1IjoibHNrNSIsImEiOiJjbHU5cDV4aWgwYmcyMnFudDMxNHdjOXhrIn0.ZE-NoOXAw8wF5hg2OCQlUw";
+
+                const dataPath = "reformatted_data/reformatted_CO2.csv";
+
+                mapboxgl.accessToken = YOUR_TOKEN;
+
+                // replace later to account for slider interaction
+                let selectedYear = 2015;
+
+                const csvData = await d3.csv(dataPath);
+                console.log("data:", csvData);
+                const geoJSON = await d3.json("raw_data/countries.geo.json");
+                console.log("geoJSON data:", geoJSON);
+                console.log("Number of features in geoJSON:", geoJSON.features.length);
+
+                // Extract country names from CSV data
+                const csvCountryNames = new Set(csvData.map(d => d.country));
+
+                // Extract country names from GeoJSON data
+                const geoJsonCountryNames = new Set(geoJSON.features.map(feature => feature.properties.name));
+
+                // Find country names in CSV that are not in GeoJSON
+                const missingInGeoJson = Array.from(csvCountryNames).filter(name => !geoJsonCountryNames.has(name));
+
+                // Find country names in GeoJSON that are not in CSV
+                const missingInCsv = Array.from(geoJsonCountryNames).filter(name => !csvCountryNames.has(name));
+
+                console.log("Missing in GeoJSON:", missingInGeoJson);
+                console.log("Missing in CSV:", missingInCsv);
+
+                const nameMapping = {
+                    "Andorra": "Andorra",
+                    "UAE": "United Arab Emirates",
+                    "Antigua and Barbuda": "Antigua and Barbuda",
+                    "Bahrain": "Bahrain",
+                    "Bahamas": "The Bahamas",
+                    "Barbados": "Barbados",
+                    "Cote d'Ivoire": "Ivory Coast",
+                    "Congo, Dem. Rep.": "Democratic Republic of the Congo",
+                    "Congo, Rep.": "Republic of the Congo",
+                    "Comoros": "Comoros",
+                    "Cape Verde": "Cape Verde",
+                    "Dominica": "Dominica",
+                    "Micronesia, Fed. Sts.": "Micronesia",
+                    "UK": "United Kingdom",
+                    "Guinea-Bissau": "Guinea Bissau",
+                    "Grenada": "Grenada",
+                    "Hong Kong, China": "Hong Kong",
+                    "Kyrgyz Republic": "Kyrgyzstan",
+                    "Kiribati": "Kiribati",
+                    "St. Kitts and Nevis": "Saint Kitts and Nevis",
+                    "Lao": "Laos",
+                    "St. Lucia": "Saint Lucia",
+                    "Liechtenstein": "Liechtenstein",
+                    "Maldives": "Maldives",
+                    "Marshall Islands": "Marshall Islands",
+                    "North Macedonia": "Macedonia",
+                    "Mauritius": "Mauritius",
+                    "Nauru": "Nauru",
+                    "Palau": "Palau",
+                    "Palestine": "West Bank",
+                    "Singapore": "Singapore",
+                    "Serbia": "Republic of Serbia",
+                    "Sao Tome and Principe": "Sao Tome and Principe",
+                    "Slovak Republic": "Slovakia",
+                    "Eswatini": "Swaziland",
+                    "Seychelles": "Seychelles",
+                    "Timor-Leste": "East Timor",
+                    "Tonga": "Tonga",
+                    "Tuvalu": "Tuvalu",
+                    "Tanzania": "United Republic of Tanzania",
+                    "USA": "United States of America",
+                    "St. Vincent and the Grenadines": "Saint Vincent and the Grenadines",
+                    "Samoa": "Samoa"
+                };
+
+
+                const mapBox = new mapboxgl.Map({
+                    container: "map",
+                    style: "mapbox://styles/mapbox/light-v10",
+                    center: [-3.2, 55.95],
+                    zoom: 2
+                })
+
+                // Function to check if the map is loaded, then update it
+                function ensureMapIsLoadedAndUpdate(mapBox, updateFunction) {
+                    if (mapBox.isStyleLoaded()) {
+                        updateFunction();
+                    } else {
+                        mapBox.on('load', updateFunction);
+                    }
+                }
+
+                // Function to update the map based on the selected year
+                function updateMap(selectedYear, geoJSON, csvData) {
+                    // Filter CSV data for the selected year
+                    const filteredData = csvData.filter(d => +d.year == selectedYear);
+                    
+                    // Create a map from country name to its data for easier access
+                    const countryDataMap = new Map(filteredData.map(d => [d.country, +d.co2_per_capita]));
+
+                    if (!geoJSON.features) {
+                        console.error('The loaded geoJSON does not contain any features. Check the file structure.');
+                        return;
+                    }
+
+
+                    // Finding the min and max CO2 per capita values for the color scale domain
+                    const co2Values = Array.from(countryDataMap.values());
+                    const maxCo2 = Math.max(...co2Values);
+                    const minCo2 = Math.min(...co2Values);
+
+                    // Define a color scale
+                    // Using d3.interpolateGreens for a green color scale, adjust as needed for your color preference
+                    const colorScale = d3.scaleSequential(d3.interpolateGreens)
+                                            .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max CO2 per capita values
+
+                    
+                    geoJSON.features.forEach(feature => {
+                        let countryName = feature.properties.name;
+                        // If the GeoJSON country name is in the mapping, use the mapped name instead
+                        const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                        countryName = mappedName || countryName; // Use the original name if no mapping exists
+                        
+                        const co2Value = countryDataMap.get(countryName);
+                        feature.properties.dataValue = co2Value || 0; // Use 0 if no data available
+                    });
+
+                    
+                    // Update Mapbox layer:
+                    // Function to run once the map is loaded or immediately if it's already loaded
+                    const updateFunction = () => {
+                        console.log("updateFunction is called");
+                        if (mapBox.getSource('countries')) {
+                            // If the source already exists, update its data
+                            mapBox.getSource('countries').setData(geoJSON);
+                        } else {
+                            // Add source and layer
+                            mapBox.addSource('countries', {
+                                type: 'geojson',
+                                data: geoJSON
+                            });
+
+                            mapBox.addLayer({
+                                id: 'countries-choropleth',
+                                type: 'fill',
+                                source: 'countries',
+                                layout: {},
+                                paint: {
+                                    // dynamically set the fill-color based on 'dataValue'
+                                    'fill-color': [
+                                        'interpolate',
+                                        ['linear'],
+                                        ['get', 'dataValue'],
+                                        minCo2, colorScale(minCo2), // Mapping min CO2 to lighter green
+                                        maxCo2, colorScale(maxCo2)  // Mapping max CO2 to darker green
+                                    ],
+                                    'fill-opacity': 0.7
+                                }
+                            });
+                            console.log("Layer added. Current layers:", mapBox.getStyle().layers.map(layer => layer.id));
+
+                            // Add click event listener to the 'countries-choropleth' layer
+                            mapBox.on('click', 'countries-choropleth', function(e) {
+                                if (e.features.length > 0) {
+                                    const countryName = e.features[0].properties.name;
+                                    console.log("Clicked on " + countryName);
+                                }
+                            });
+
+                            // Change the cursor to a pointer when the mouse is over the layer.
+                            mapBox.on('mouseenter', 'countries-choropleth', function() {
+                                mapBox.getCanvas().style.cursor = 'pointer';
+                            });
+
+                            // Change it back to a default cursor when it leaves.
+                            mapBox.on('mouseleave', 'countries-choropleth', function() {
+                                mapBox.getCanvas().style.cursor = '';
+                            });
+
+                        }
+                };
+                
+                // Check if the map is loaded and then update
+                ensureMapIsLoadedAndUpdate(mapBox, updateFunction);
+
+                }
+                updateMap(selectedYear, geoJSON, csvData);
+            })();
+        // };
+	</script>
+
+</body>
+
+</html>

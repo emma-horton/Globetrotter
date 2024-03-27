@@ -2,3 +2,13 @@ Image sources:
 https://www.pexels.com/photo/person-holding-world-globe-facing-mountain-346885/ 
 https://pixabay.com/illustrations/earth-planet-world-globe-1617121/
 https://www.pexels.com/photo/world-map-illustration-592753/
+
+geo JSON data: https://github.com/johan/world.geo.json/blob/master/countries.geo.json?short_path=afdfc39 
+
+Orientation/Tutorials:
+https://www.youtube.com/watch?v=Qw6uAg3EO64
+https://www.youtube.com/watch?v=OoZ0LWD9KUs
+https://docs.mapbox.com/ios/maps/guides/
+https://medium.com/@amy.degenaro/introduction-to-digital-cartography-geojson-and-d3-js-c27f066aa84
+
+

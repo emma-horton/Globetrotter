@@ -1,0 +1,74 @@
+<!-- EXAMPLE, based on https://www.youtube.com/watch?v=Qw6uAg3EO64 (last accessed 27.03.24) -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choropleth Map</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+
+</head>
+<body>
+    <svg width="960" height="600"></svg>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const svg = d3.select('svg');
+            const width = +svg.attr('width');
+            const height = +svg.attr('height');
+            const projection = d3.geoMercator().fitSize([width, height], {type: "Sphere"});
+            const pathGenerator = d3.geoPath().projection(projection);
+
+            // Load and prepare data
+            const dataPath = "reformatted_data/reformatted_CO2.csv";
+            const dataset = await d3.csv(dataPath);
+            console.log("dataset", dataset);
+
+            const dataValueMap = new Map(dataset.map(d => [d.country, +d.co2_per_capita]));
+            console.log("datavaluemap", dataValueMap);
+
+            // Create a color scale
+            // Make sure to use the correct field name from your CSV file here
+            const colorScale = d3.scaleSequential(d3.interpolateBlues)
+                .domain(d3.extent(dataset, d => +d.co2_per_capita));
+
+            // Zoom functionality
+            const zoom = d3.zoom()
+                .scaleExtent([1, 8])
+                .on('zoom', event => {
+                    svg.selectAll('path')
+                    .attr('transform', event.transform);
+                });
+
+            // Apply the zoom behavior to the SVG element
+            svg.call(zoom);
+
+            // Load and display the GeoJSON data
+            d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json').then(data => {
+                const countries = topojson.feature(data, data.objects.countries);
+                svg.selectAll('path')
+                    .data(countries.features)
+                    .enter().append('path')
+                    .attr('d', pathGenerator)
+                    .attr('fill', d => {
+                        const value = dataValueMap.get(d.properties.name);
+                        return value ? colorScale(value) : '#ccc';
+                    })
+                    .attr('class', 'country')
+                    .append('title')  // Add a tooltip
+                    .text(d => `${d.properties.name}: ${dataValueMap.get(d.properties.name) || 'No data'}`);
+            });
+        });
+
+
+
+
+
+    
+    </script>
+    
+</body>
+</html>
