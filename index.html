@@ -85,7 +85,10 @@
         <!-- Dashboard footer: timeslider and Navigation -->
         <section id="timeslider-and-navigation">
             <button id="motion-btn">Play Motion</button>
-            <div id="timeslider">Timeslider</div>
+            <div id="sliderContainer">
+                <label for="yearSlider">Year: <span id="sliderValue"></span></label>
+                <input type="range" id="yearSlider" min="1800" max="2024" value="1800" step="1">
+            </div>
             <button id="back-btn">back</button>
             <button id="next-btn">next</button>
         </section>
