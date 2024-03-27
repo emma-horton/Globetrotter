@@ -515,7 +515,7 @@ function loadAndUpdateDistributionChart(selectedData, selectedIndicator, yLabel,
 document.getElementById("yearSlider").addEventListener("input", function() {
     let year = this.value;
     console.log(year);
-    d3.select("#sliderValue").text(year); // Update the label with the current year
+    d3.select("#sliderValue").text(year); 
 
     // Call multiple functions within a single listener
     if (selectedIndicator  == 'life_expectancy') {

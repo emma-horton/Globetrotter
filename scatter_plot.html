@@ -1,0 +1,292 @@
+<HTML>
+    <head>
+        <!-- Importing D3.js for data visualization -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <style>
+            /* Setting the width and height for html, body, div, and svg elements to occupy full page */
+            html, body, div, svg {
+                width: 100%;
+                height: auto;
+            }
+    
+            /* Styling for tooltip text */
+            .tooltip {
+                font-size: 15px;
+            }
+    
+            /* Styling for axis paths and lines */
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+    
+            /* Styling for axis labels */
+            .axis text {
+                font-size: 10px;
+            }
+            #sliderContainer {
+                width: 80%;
+                margin: 20px auto;
+            }
+            
+            input[type=range] {
+                -webkit-appearance: none; /* Override default appearance */
+                appearance: none;
+                width: 100%; /* Full-width */
+                height: 10px; /* Specified height */
+                background: #ddd; /* Grey background */
+                outline: none; /* Remove outline */
+                opacity: 0.7; /* Set transparency (cross-browser) */
+                -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+                transition: opacity .2s;
+            }
+            
+            input[type=range]::-webkit-slider-thumb {
+                -webkit-appearance: none; /* Override default look */
+                appearance: none;
+                width: 20px; /* Set a specific slider handle width */
+                height: 20px; /* Slider handle height */
+                background: #4CAF50; /* Green background */
+                cursor: pointer; /* Cursor on hover */
+            }
+            
+            input[type=range]::-moz-range-thumb {
+                width: 20px; /* Set a specific slider handle width */
+                height: 20px; /* Slider handle height */
+                background: #4CAF50; /* Green background */
+                cursor: pointer; /* Cursor on hover */
+            }
+            
+        </style>
+    </head>
+    <body>
+        <!-- Page heading -->
+        <h2>Distrubution Plot</h2>
+        <!-- Container for the SVG visualization -->
+        <div id="buttonsContainer" style="text-align:center; margin-bottom: 20px;">
+            <button id="lifeExpectancyBtn">Life Expectancy</button>
+            <button id="genderEqualityBtn">Gender Equality</button>
+            <button id="gdpPerCapitaBtn">GDP Per Capita</button>
+            <button id="co2EmissionBtn">CO2 Emission Per Capita</button>
+        </div>
+        <div id="scatter-plot">
+            <svg></svg>
+        </div>
+        <div id="sliderContainer">
+            <label for="yearSlider">Year: <span id="sliderValue"></span></label>
+            <input type="range" id="yearSlider" min="1800" max="2024" value="1800" step="1">
+        </div>
+        
+        <script>
+            function showLifeExpectancyData() {
+                console.log("Life Expectancy Data Shown");
+                let selectedData = 'reformatted_data/reformatted_life_expectancy.csv';
+                let selectedIndicator = 'life_expectancy'
+                let yLabel = 'Life Expectancy (years)'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1800;
+                document.getElementById("yearSlider").max = 2024;
+                let color = '#32CD32';
+                const binSize = 2.5;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
+            }
+            
+            function showGenderEqualityData() {
+                console.log("Gender Equality Data Shown");
+                let selectedData = 'reformatted_data/reformatted_gender_equality.csv';
+                let selectedIndicator = 'gender_ratio_of_mean_years_in_school'
+                let yLabel = 'Gender Ratio of Mean Years in School'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1970;
+                document.getElementById("yearSlider").max = 2015;
+                let color = '#FFA500';
+                const binSize = 2.5;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
+            }
+            
+            function showGdpPerCapitaData() {
+                console.log("GDP Per Capita Data Shown");
+                let selectedData = 'reformatted_data/reformatted_gdp.csv';
+                let selectedIndicator = 'gdp_per_capita'
+                let yLabel = 'GDP per capita (international dollars)'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1800;
+                document.getElementById("yearSlider").max = 2024;
+                let color = '#6495ED';
+                const binSize = 300;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color, binSize);
+            }
+            
+            function showCo2EmissionData() {
+                console.log("CO2 Emission Data Shown");
+                let selectedData = 'reformatted_data/reformatted_CO2.csv';
+                let selectedIndicator = 'co2_per_capita'
+                let yLabel = 'CO2 per capita (tonnes)'
+                // set new min and max value for slider 
+                document.getElementById("yearSlider").min = 1800;
+                document.getElementById("yearSlider").max = 2022;
+                let color = '#BA55D3';
+                const binSize = 0.25;
+                loadAndUpdateChart(selectedData, selectedIndicator, yLabel, color);
+            }
+            // Adding event listeners to buttons
+            document.getElementById("lifeExpectancyBtn").addEventListener("click", showLifeExpectancyData);
+            document.getElementById("genderEqualityBtn").addEventListener("click", showGenderEqualityData);
+            document.getElementById("gdpPerCapitaBtn").addEventListener("click", showGdpPerCapitaData);
+            document.getElementById("co2EmissionBtn").addEventListener("click", showCo2EmissionData);
+            // Loading and processing the CSV data
+            
+            function loadAndUpdateScatterPlotChart(selectedYear='2020', country='Uganda') { 
+                d3.csv('reformatted_data/reformatted_all.csv').then(function(data) {
+                    console.log(data)
+                    d3.select("#scatter-plot").select("svg").remove();
+
+                    // function selects all countries in a given year and fin average of each metric 
+                    function calculateWorldAverages(year) {
+                        const filteredData = data.filter(d => d.year === year);
+                        console.log(filteredData)
+                        const updatedDataset = filteredData.map(item => {
+                            return {
+                            ...item, // Spread operator to copy existing properties
+                            gdp_per_capita: parseFloat(item.gdp_per_capita),
+                            co2_per_capita: parseFloat(item.co2_per_capita),
+                            life_expectancy: parseFloat(item.life_expectancy)
+                            };
+                        });
+                        const averages = updatedDataset.reduce((acc, cur) => {
+                        acc.gdp_per_capita += cur.gdp_per_capita;
+                        acc.co2_per_capita += cur.co2_per_capita;
+                        acc.life_expectancy += cur.life_expectancy;
+                        return acc;
+                        }, { gdp_per_capita: 0, co2_per_capita: 0, life_expectancy: 0 });
+
+                        averages.gdp_per_capita /= updatedDataset.length;
+                        averages.co2_per_capita /= updatedDataset.length;
+                        averages.life_expectancy /= updatedDataset.length;
+                        return averages;
+                    }
+                    // function finds the value of each metric for a given country 
+                    function findMetricsByCountryYear(country, year) {
+                        const result = data.find(item => item.country == country && item.year == year);
+                        if (!result) {
+                          console.log(`No data available for ${country} in ${year}.`);
+                          return null;
+                        } else {
+                          return {
+                            country: country,
+                            year: year,
+                            gdp_per_capita: result.gdp_per_capita,
+                            co2_per_capita: result.co2_per_capita,
+                            life_expectancy: result.life_expectancy
+                          };
+                        }
+                    }
+
+                    // calculate percentage difference between countries metric and world average for each indicator
+                    world_average = calculateWorldAverages(selectedYear);
+                    country_average = findMetricsByCountryYear(country, selectedYear);
+
+                    gdp_percent_diff = ((parseFloat(country_average.gdp_per_capita) - world_average.gdp_per_capita) / world_average.gdp_per_capita) * 100
+                    co2_percent_diff = ((parseFloat(country_average.co2_per_capita)- world_average.co2_per_capita) / world_average.co2_per_capita) * 100
+                    life_expectancy_percent_diff = ((parseFloat(country_average.life_expectancy)- world_average.life_expectancy) / world_average.life_expectancy) * 100
+
+                    console.log(gdp_percent_diff)
+                    console.log(co2_percent_diff)
+                    console.log(life_expectancy_percent_diff)
+
+
+                    // format data 
+                    const metricsData = [
+                            { metric: 'GDP per Capita', percentDiff: gdp_percent_diff },
+                            { metric: 'CO2 per Capita', percentDiff: co2_percent_diff },
+                            { metric: 'Life Expectancy', percentDiff: life_expectancy_percent_diff}
+                    ];
+                    // Setting margins and dimensions for the SVG canvas
+                    const margin = {top: 10, right: 20, bottom: 50, left: 100},
+                        svgWidth = 960,
+                        svgHeight = 250,
+                        width = svgWidth - margin.left - margin.right,
+                        height = svgHeight - margin.top - margin.bottom;
+
+                    // Create an SVG element within the #top5 container
+                    const svg = d3.select("#scatter-plot")
+                                .append("svg")
+                                .attr("width", svgWidth)
+                                .attr("height", svgHeight)
+                                .append("g")
+                                .attr("transform", `translate(${margin.left},${margin.top})`);
+                    
+                    // X scale - Categorical
+                    const x = d3.scaleBand()
+                    .domain(metricsData.map(d => d.metric))
+                    .range([0, width])
+                    .padding(0.1);
+
+                    // scale y axis 
+                    const percentages = [gdp_percent_diff, co2_percent_diff, life_expectancy_percent_diff];
+                    const hasNegativeNumber = percentages.some(element => element < 0);
+                    const hasPositiveNumber = percentages.some(element => element > 0);
+                    let y;
+                    if (hasNegativeNumber === true) {
+                        if (hasPositiveNumber === true){
+                            y = d3.scaleLinear()
+                                    .domain([d3.min(percentages), d3.max(percentages)])
+                                    .range([height, 0]);
+                        } else {
+                            y = d3.scaleLinear()
+                                    .domain([d3.min(percentages), 0])
+                                    .range([height, 0]);
+                        }
+                    } else if (hasNegativeNumber === false) {
+                        y = d3.scaleLinear()
+                                    .domain([0, d3.max(percentages)])
+                                    .range([height, 0]);
+                    }
+
+                    svg.append("g")
+                    .call(d3.axisLeft(y));
+
+                    svg.append("text")
+                    .attr("text-anchor", "middle") 
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", -margin.left + 20) 
+                    .attr("x", -(height / 2)) 
+                    .text("%Difference from World Average");
+   
+
+                    // Add x-axis
+                    svg.append("g")
+                    .attr("transform", `translate(0,${y(0)})`)
+                    .call(d3.axisBottom(x));
+                    
+          
+                    // Plotting points with conditional fill colors
+                    svg.selectAll(".point")
+                    .data(metricsData)
+                    .enter().append("circle") 
+                    .attr("class", "point")
+                    .attr("cx", d => x(d.metric) + x.bandwidth() / 2) 
+                    .attr("cy", d => y(d.percentDiff))
+                    .attr("r", 10) 
+                    .attr("fill", d => {
+                        // Determine the fill color based on the metric
+                        if (d.metric === 'GDP per Capita') return '#6495ED';
+                        else if (d.metric === 'CO2 per Capita') return '#BA55D3';
+                        else if (d.metric === 'Life Expectancy') return '#32CD32';
+                        else return "steelblue";
+                    });
+
+                })
+            }
+            document.getElementById("yearSlider").addEventListener("input", function() {
+                let year = this.value;
+                console.log(year);
+                d3.select("#sliderValue").text(year); 
+                loadAndUpdateScatterPlotChart(year);
+            });
+        </script>
+    </body>
+</HTML>
+    
