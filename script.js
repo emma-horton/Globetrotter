@@ -267,24 +267,6 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
                       .append("g")
                       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Defining the x-axis scale based on life expectancy data
-        const x = d3.scaleLinear()
-                    .domain([0, d3.max(data, d => +d[GLOBALSelectedIndicator])])
-                    .range([0, width]);
-
-        // Adding the bottom axis to the SVG group
-        svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
-        
-        // Adding label for the x-axis
-        svg.append("text")             
-        .attr("transform",
-                "translate(" + (width/2) + " ," + 
-                                (height + margin.top + 20) + ")")
-        .style("text-anchor", "middle")
-        .text(yLabel);
-
         // Adding label for the y-axis
         svg.append("text")
         .attr("transform", "rotate(-90)")
@@ -325,6 +307,23 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
         function updateTop5Timeline(updatedData) {
             let topFiveUpdated = updatedData.sort((a, b) => b[GLOBALSelectedIndicator] - a[GLOBALSelectedIndicator]).slice(0, 5);
             console.log(topFiveUpdated)
+            // Defining the x-axis scale based on life expectancy data
+            const x = d3.scaleLinear()
+            .domain([0, d3.max(topFiveUpdated, d => +d[GLOBALSelectedIndicator])])
+            .range([0, width]);
+
+            svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+            // Adding label for the x-axis
+            svg.append("text")             
+            .attr("transform",
+                    "translate(" + (width/2) + " ," + 
+                                    (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text(yLabel);
+        
 
             // Redraw bars for the top five countries
             svg.selectAll(".rect-top5")
