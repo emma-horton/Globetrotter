@@ -9,6 +9,8 @@
     <!-- MapBox API -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
 	<link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js"></script>
+
     <title>Globetrotter</title>
 </head>
 <body>
@@ -85,8 +87,8 @@
         <!-- 2. dashboard: explore a country -->
         <section class="dashboard" id="country-dashboard-grid">
             <div id="worldmap">
-                <h2>World Map</h2>
-                <div id="map"></div>
+                <h2 id="country-on-map"></h2>
+                <div id="map-country"></div>
             </div>
             <div id="scatter-plot">
                 <h2>%Distance from World Average</h2>

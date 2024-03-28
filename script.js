@@ -1,6 +1,7 @@
 // selected indicator is a global variable 
 var GLOBALSelectedIndicator;
 var GLOBALSelectedCountry = 'any';
+var indicator; // string text of indicator without underscores (can be displayed as headlines for example)
 // Display different views
 function displayStartPage() {
     document.body.classList.add("startpage-background");
@@ -45,6 +46,7 @@ function displaySecondDashboard() {
     document.getElementById("country-dashboard-grid").style.display = "grid";
     document.getElementById("timeslider-and-navigation").style.display = "flex";  
     GLOBALSelectedCountry = document.getElementById('userInput').value;
+    document.getElementById("dahboard-heading").innerHTML = GLOBALSelectedCountry + " - " + indicator;
     console.log(GLOBALSelectedCountry); 
     displayPage();      
 }
@@ -52,9 +54,10 @@ function displaySecondDashboard() {
 displayStartPage();
 
 function optionSelected(value) {
-    console.log(value + " selected");
-    document.getElementById("dahboard-heading").innerHTML = value;
+    indicator = value;
+    console.log(indicator + " selected");
     if (GLOBALSelectedCountry == 'any') {
+        document.getElementById("dahboard-heading").innerHTML = indicator;
         displayFirstDashboard();
     } else {
         displaySecondDashboard();
@@ -88,6 +91,7 @@ function showLifeExpectancyData(year=2015) {
         //loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, GLOBALSelectedCountry)
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_life_expectancy.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color);
+        loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year);
     }
 } 
 
@@ -109,6 +113,7 @@ function showGenderEqualityData(year=2015) {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gender_equality.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
+        loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
 }
 
@@ -130,6 +135,7 @@ function showGdpPerCapitaData(year=2015) {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
+        loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
 }
 
@@ -152,6 +158,7 @@ function showCo2EmissionData(year=2015) {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
+        loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
 }
 // Adding event listeners to buttons
@@ -1210,6 +1217,246 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
         
         // Check if the map is loaded and then update
         ensureMapIsLoadedAndUpdate(mapBox, updateFunction);
+
+        }
+        updateMap(selectedYear, geoJSON, csvData);
+    })();
+
+}
+
+function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year) {
+    console.log("inside loadAndUpdateWorldMapForSelectedCountry");
+
+    document.getElementById("country-on-map").innerHTML = GLOBALSelectedCountry + " on the Map";
+
+    (async () => {
+
+        console.log("inside async world map function");
+        // token
+        let token = "pk.eyJ1IjoibHNrNSIsImEiOiJjbHU5cDV4aWgwYmcyMnFudDMxNHdjOXhrIn0.ZE-NoOXAw8wF5hg2OCQlUw";
+
+        const dataPath = selectedData;
+
+        mapboxgl.accessToken = token;
+
+        // replace later to account for slider interaction
+        // let selectedYear = 2015;
+        let selectedYear = year;
+
+        const csvData = await d3.csv(dataPath);
+        console.log("data:", csvData);
+        const geoJSON = await d3.json("raw_data/countries.geo.json");
+        // console.log("geoJSON data:", geoJSON);
+        // console.log("Number of features in geoJSON:", geoJSON.features.length);
+
+        // Extract country names from CSV data
+        const csvCountryNames = new Set(csvData.map(d => d.country));
+
+        // Extract country names from GeoJSON data
+        const geoJsonCountryNames = new Set(geoJSON.features.map(feature => feature.properties.name));
+
+        // Find country names in CSV that are not in GeoJSON
+        const missingInGeoJson = Array.from(csvCountryNames).filter(name => !geoJsonCountryNames.has(name));
+
+        // Find country names in GeoJSON that are not in CSV
+        const missingInCsv = Array.from(geoJsonCountryNames).filter(name => !csvCountryNames.has(name));
+
+        //console.log("Missing in GeoJSON:", missingInGeoJson);
+        //console.log("Missing in CSV:", missingInCsv);
+
+        const nameMapping = {
+            "Andorra": "Andorra",
+            "UAE": "United Arab Emirates",
+            "Antigua and Barbuda": "Antigua and Barbuda",
+            "Bahrain": "Bahrain",
+            "Bahamas": "The Bahamas",
+            "Barbados": "Barbados",
+            "Cote d'Ivoire": "Ivory Coast",
+            "Congo, Dem. Rep.": "Democratic Republic of the Congo",
+            "Congo, Rep.": "Republic of the Congo",
+            "Comoros": "Comoros",
+            "Cape Verde": "Cape Verde",
+            "Dominica": "Dominica",
+            "Micronesia, Fed. Sts.": "Micronesia",
+            "UK": "United Kingdom",
+            "Guinea-Bissau": "Guinea Bissau",
+            "Grenada": "Grenada",
+            "Hong Kong, China": "Hong Kong",
+            "Kyrgyz Republic": "Kyrgyzstan",
+            "Kiribati": "Kiribati",
+            "St. Kitts and Nevis": "Saint Kitts and Nevis",
+            "Lao": "Laos",
+            "St. Lucia": "Saint Lucia",
+            "Liechtenstein": "Liechtenstein",
+            "Maldives": "Maldives",
+            "Marshall Islands": "Marshall Islands",
+            "North Macedonia": "Macedonia",
+            "Mauritius": "Mauritius",
+            "Nauru": "Nauru",
+            "Palau": "Palau",
+            "Palestine": "West Bank",
+            "Singapore": "Singapore",
+            "Serbia": "Republic of Serbia",
+            "Sao Tome and Principe": "Sao Tome and Principe",
+            "Slovak Republic": "Slovakia",
+            "Eswatini": "Swaziland",
+            "Seychelles": "Seychelles",
+            "Timor-Leste": "East Timor",
+            "Tonga": "Tonga",
+            "Tuvalu": "Tuvalu",
+            "Tanzania": "United Republic of Tanzania",
+            "USA": "United States of America",
+            "St. Vincent and the Grenadines": "Saint Vincent and the Grenadines",
+            "Samoa": "Samoa"
+        };
+
+
+        const mapBox2 = new mapboxgl.Map({
+            container: "map-country",
+            style: "mapbox://styles/mapbox/light-v10",
+            center: [10, 30],
+            zoom: 1
+        })
+
+        // Function to check if the map is loaded, then update it
+        function ensureMapIsLoadedAndUpdate(mapBox2, updateFunction) {
+            if (mapBox2.isStyleLoaded()) {
+                updateFunction();
+            } else {
+                mapBox2.on('load', updateFunction);
+            }
+        }
+
+        // Function to update the map based on the selected year
+        function updateMap(selectedYear, geoJSON, csvData) {
+            // Filter CSV data for the selected year
+            const filteredData = csvData.filter(d => +d.year == selectedYear);
+            
+            // Create a map from country name to its data for easier access
+            let countryDataMap;
+
+            if(GLOBALSelectedIndicator == 'life_expectancy') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.life_expectancy]));
+            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.gender_ratio_of_mean_years_in_school]));
+            } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.gdp_per_capita]));
+            } else if (GLOBALSelectedIndicator  == 'co2_per_capita') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.co2_per_capita]));
+            }
+            
+
+            if (!geoJSON.features) {
+                console.error('The loaded geoJSON does not contain any features => check file structure');
+                return;
+            }
+
+
+            // Finding the min and max CO2 per capita values for the color scale domain
+            const co2Values = Array.from(countryDataMap.values());
+            const maxCo2 = Math.max(...co2Values);
+            const minCo2 = Math.min(...co2Values);
+
+            let colorScale;
+
+            // Define a color scale dependent on the chosen indicator
+            if(GLOBALSelectedIndicator == 'life_expectancy') {
+                colorScale = d3.scaleSequential(d3.interpolateGreens)
+                                    .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
+            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+                colorScale = d3.scaleSequential(d3.interpolate("orange", "yellow"))
+                                    .domain([minCo2, maxCo2]);
+            } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
+                colorScale = d3.scaleSequential(d3.interpolateBlues)
+                                    .domain([minCo2, maxCo2]);
+            } else if (GLOBALSelectedIndicator  == 'co2_per_capita') {
+                colorScale = d3.scaleSequential(d3.interpolatePurples)
+                                    .domain([minCo2, maxCo2]);
+            }
+            
+
+            
+            geoJSON.features.forEach(feature => {
+                let countryName = feature.properties.name;
+                // If the GeoJSON country name is in the mapping, use the mapped name instead
+                const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                countryName = mappedName || countryName; // Use the original name if no mapping exists
+                
+                const co2Value = countryDataMap.get(countryName);
+                feature.properties.dataValue = co2Value || 0; // Use 0 if no data available
+            });
+
+            
+            // Update Mapbox layer:
+            // Function to run once the map is loaded or immediately if it's already loaded
+            const updateFunction = () => {
+                console.log("updateFunction is called");
+                if (mapBox2.getSource('countries')) {
+                    // If the source already exists, update its data
+                    mapBox2.getSource('countries').setData(geoJSON);
+                } else {
+                    // Add source and layer
+                    mapBox2.addSource('countries', {
+                        type: 'geojson',
+                        data: geoJSON
+                    });
+
+                    mapBox2.addLayer({
+                        id: 'countries-choropleth',
+                        type: 'fill',
+                        source: 'countries',
+                        layout: {},
+                        paint: {
+                            // dynamically set the fill-color based on 'dataValue'
+                            'fill-color': [
+                                'interpolate',
+                                ['linear'],
+                                ['get', 'dataValue'],
+                                minCo2, colorScale(minCo2), // Mapping min CO2 to lighter green
+                                maxCo2, colorScale(maxCo2)  // Mapping max CO2 to darker green
+                            ],
+                            'fill-opacity': 0.7
+                        }
+                    });
+                    console.log("Layer added. Current layers:", mapBox2.getStyle().layers.map(layer => layer.id));
+
+                    // Add click event listener to the 'countries-choropleth' layer
+                    mapBox2.on('click', 'countries-choropleth', function(e) {
+                        if (e.features.length > 0) {
+                            const countryName = e.features[0].properties.name;
+                            console.log("Clicked on " + countryName);
+                        }
+                    });
+
+                    // Change the cursor to a pointer when the mouse is over the layer.
+                    mapBox2.on('mouseenter', 'countries-choropleth', function() {
+                        mapBox2.getCanvas().style.cursor = 'pointer';
+                    });
+
+                    // Change it back to a default cursor when it leaves.
+                    mapBox2.on('mouseleave', 'countries-choropleth', function() {
+                        mapBox2.getCanvas().style.cursor = '';
+                    });
+
+                    // Find the feature for GLOBALSelectedCountry
+                    const countryFeature = geoJSON.features.find(feature => feature.properties.name === GLOBALSelectedCountry || feature.properties.name === nameMapping[GLOBALSelectedCountry]);
+                    console.log("countryFeature", countryFeature)
+                    if (countryFeature) {
+                        // Calculate bounding box with Turf.js
+                        const bbox = turf.bbox(countryFeature);
+
+                        // Zoom to the bounding box, with some padding
+                        mapBox2.fitBounds(bbox, { padding: 20 });
+                    } else {
+                        console.log("Selected country feature not found in GeoJSON.");
+                    }
+
+                }
+
+            };
+        
+        // Check if the map is loaded and then update
+        ensureMapIsLoadedAndUpdate(mapBox2, updateFunction);
 
         }
         updateMap(selectedYear, geoJSON, csvData);

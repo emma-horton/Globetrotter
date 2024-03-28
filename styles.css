@@ -121,7 +121,7 @@ input[type=range]::-moz-range-thumb {
     cursor: pointer; /* Cursor on hover */
 }
 
-#map {
-    width: 800px; /* or 100% if you want it to be full-width */
-    height: 300px; /* Adjust the height as needed */
+#map, #map-country {
+    width: 800px;
+    height: 300px;
 }
