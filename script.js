@@ -41,7 +41,7 @@ function displaySecondDashboard() {
     document.getElementById("choose-country-popup").style.display = "none";
     document.getElementById("dashboard-header").style.display = "block";
     document.getElementById("indicator-dashboard-grid").style.display = "none";
-    document.getElementById("country-dashboard-grid").style.display = "flex";
+    document.getElementById("country-dashboard-grid").style.display = "grid";
     document.getElementById("timeslider-and-navigation").style.display = "flex";        
 }
 
