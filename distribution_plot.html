@@ -229,6 +229,13 @@
                             .attr("height", d => height - y(d.length))
                             .style("fill", color);
                     
+                    d3.select("#yearSlider").on("input", function() {
+                        let year = this.value;
+                        console.log(year)
+                        d3.select("#sliderValue").text(year); // Update the label with the current year
+                        filterDataAndUpdateChart(year); // Function to update the chart
+                    });
+                    
                     filterDataAndUpdateChart(2015);
                     
                     // Filter the data for the selected year
@@ -292,6 +299,7 @@
                 });
                     
             }
+
         </script>
     </body>
 </HTML>
