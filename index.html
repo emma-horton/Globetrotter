@@ -44,6 +44,10 @@
             <div id="choose-country-text">
                 Let's dive deeper into a specific country. Click on one country of your choice on the map and let's explore how their indicators compare to the world averages.
             </div>
+            <form id="myForm">
+                <label for="userInput">Search: </label><br>
+                <input type="text" id="userInput" name="userInput"><br>
+              </form>
             <button id="choose-country-btn" onclick="displaySecondDashboard()">Let's choose a country!</button>
         </section>
 
@@ -79,10 +83,10 @@
             <div id="worldmap">
                 <h2>World Map</h2>
             </div>
-            <div id="top5">
-                <h2>Top 5 Countries</h2>
+            <div id="scatter-plot">
+                <h2>%Distance from World Average</h2>
             </div>
-            <div id="distribution">
+            <div id='distribution-specific-country'>
                 <h2>Distribution of Countries</h2>
             </div>
             <div id="linegraph">
