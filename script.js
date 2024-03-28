@@ -78,13 +78,16 @@ function showLifeExpectancyData(year=2015) {
     document.getElementById("yearSlider").max = 2024;
     console.log(GLOBALSelectedCountry)
     if (GLOBALSelectedCountry == 'any'){
+        loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
+        
     } else {
         console.log('dashboard2 only')
         //loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, GLOBALSelectedCountry)
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_life_expectancy.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color);
     }
 } 
 
@@ -98,13 +101,14 @@ function showGenderEqualityData(year=2015) {
     document.getElementById("yearSlider").min = 1970;
     document.getElementById("yearSlider").max = 2015;
     if (GLOBALSelectedCountry == 'any'){
+        loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/reformatted_gender_equality.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gender_equality.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
-        
+        loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
     }
 }
 
@@ -118,12 +122,14 @@ function showGdpPerCapitaData(year=2015) {
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2024;
     if (GLOBALSelectedCountry == 'any'){
+        loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
     }
 }
 
@@ -138,12 +144,14 @@ function showCo2EmissionData(year=2015) {
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2022;
     if (GLOBALSelectedCountry == 'any'){
+        loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year)
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
     }
 }
 // Adding event listeners to buttons
@@ -157,6 +165,8 @@ document.getElementById("co2EmissionBtn").addEventListener("click", function() {
 
 // Loading and processing the CSV data
 function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color) { 
+
+    console.log("inside linegraph");
 
     (async () => {
         const dataPath = selectedData;
@@ -246,6 +256,149 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
             .text(yLabel); // yLabel variable for dynamic labeling
     })();
 }
+
+function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color) {
+    
+    console.log("inside country linegraph");
+
+    (async () => {
+        const dataPath = selectedData;
+        console.log("datapath", dataPath);
+
+        const width = 600;					//specifies the width, height and margins of our SVG element
+        const height = 300;
+        const margin = 70;
+
+        const data = await d3.csv(dataPath);
+
+        // console.log(data);
+        // console.table(data);		//loads table in a nice format - just to try it out (probably not super practical for this tutorial)
+
+        const groupedData = d3.group(data, d => d.year); // groupss data for each year
+        console.log(groupedData);
+
+        // Filter data for the selected country
+        const dataForSelectedCountry = data.filter(d => d.country === GLOBALSelectedCountry);
+
+        // Calculate indicator per year for the selected country
+        const indicatorPerYearForSelectedCountry = d3.rollup(dataForSelectedCountry, 
+            v => d3.mean(v, d => +d[GLOBALSelectedIndicator]), // Assuming you want the average, if it's a single value per year, this step might need adjustment
+            d => d.year);
+
+        // Convert into array of objects for further processing/visualizing
+        const indicatorArrayForSelectedCountry = Array.from(indicatorPerYearForSelectedCountry, ([year, value]) => ({ year, value }));
+        console.log(indicatorArrayForSelectedCountry);
+        
+
+        // Calculate average life expectancy for each year
+        const averageIndicatorPerYear = d3.rollup(data, 
+            v => d3.mean(v, d => +d[GLOBALSelectedIndicator]), // Calculate average, convert life_expectancy to number
+            d => d.year); // Group by year
+
+        console.log("averageIndicatorPerYear", averageIndicatorPerYear);
+
+        // Convert into array of objects for further processing/visualising
+        const averageIndicatorArray = Array.from(averageIndicatorPerYear, ([year, average]) => ({ year, average }));
+        console.log(averageIndicatorArray);
+
+        const timeExtent = d3.extent(data, (d) => d.year);
+        console.log("timeExtent", timeExtent);
+
+        const xScale = d3.scaleLinear()
+            .domain(d3.extent(averageIndicatorArray, d => +d.year)) // convert year to number
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([d3.min(averageIndicatorArray, d => d.average), d3.max(averageIndicatorArray, d => d.average)])
+            .range([height, 0]);
+
+        const x_axis = d3.axisBottom(xScale);
+        const y_axis = d3.axisLeft(yScale);
+
+        // Remove existing SVG before appending a new one to prevent overlap
+        d3.select("#linegraph-specific-country").select("svg").remove();
+
+        const svg = d3.select("#linegraph-specific-country")		//creates an SVG element
+            .append("svg")
+            .attr("width", width + margin *2)
+            .attr("height", height + margin *2);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", `translate(${margin},${height})`) //make sure you get your brackets right!
+            .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", `translate(${margin},0)`)
+            .call(y_axis);
+
+        // Plotting the line for the selected country
+        const lineGeneratorForSelectedCountry = d3.line()
+        .x((d) => margin + xScale(+d.year))
+        .y((d) => yScale(d.value));
+
+        // Add the line for the selected country
+        svg.append("path")
+            .datum(indicatorArrayForSelectedCountry)
+            .attr("fill", "none")
+            .attr("stroke", color) // Use a different color for distinction
+            .attr("stroke-width", 2)
+            .attr("d", lineGeneratorForSelectedCountry);
+        
+        // Plot line for world average
+        const lineGenerator = d3.line()
+            .x((d) => margin + xScale(+d.year))
+            .y((d) => yScale(d.average));
+
+        // Add the line for the world average
+        svg.append("path")
+        .datum(averageIndicatorArray)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "3,5")
+        .attr("d", lineGenerator);
+
+        // Add text label "[Country]"
+        const firstDataPoint_country = indicatorArrayForSelectedCountry[0];
+        svg.append("text")
+            .attr("x", margin + xScale(+firstDataPoint_country.year)) // align with x value of the first data point
+            .attr("y", yScale(firstDataPoint_country.value) - 13) // offset below line
+            .attr("fill", color)
+            .style("font-size", "10px")
+            .style("text-anchor", "start") // text starts from starting point
+            .text([GLOBALSelectedCountry]);
+        
+        // Add text label "world average"
+        const firstDataPoint = averageIndicatorArray[0];
+        svg.append("text")
+            .attr("x", margin + xScale(+firstDataPoint.year))
+            .attr("y", yScale(firstDataPoint.average) - 3)
+            .attr("fill", "black")
+            .style("font-size", "10px")
+            .style("text-anchor", "start")
+            .text("World Average");
+
+        // Add the X Axis label
+        svg.append("text")
+            .attr("x", width / 2 + margin)
+            .attr("y", height + margin * 0.7)
+            .style("text-anchor", "middle")
+            .text("Time");
+
+        // Add the Y Axis label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text(yLabel); // yLabel variable for dynamic labeling
+    })();
+}
+
+
 
 // -------------------------------------------------------------- Top 5 Bar Chart -----------------------------------------------------------------------------
 
@@ -833,6 +986,233 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
         });
 
     })
+}
+
+// ---------------------------------------------------------------- World Map ---------------------------------------------------------------------------------------
+
+function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year) {
+
+    console.log("inside loadAndUpdateWorldMap");
+
+    (async () => {
+
+        console.log("inside async world map function");
+        // token
+        let token = "pk.eyJ1IjoibHNrNSIsImEiOiJjbHU5cDV4aWgwYmcyMnFudDMxNHdjOXhrIn0.ZE-NoOXAw8wF5hg2OCQlUw";
+
+        const dataPath = selectedData;
+
+        mapboxgl.accessToken = token;
+
+        // replace later to account for slider interaction
+        // let selectedYear = 2015;
+        let selectedYear = year;
+
+        const csvData = await d3.csv(dataPath);
+        console.log("data:", csvData);
+        const geoJSON = await d3.json("raw_data/countries.geo.json");
+        // console.log("geoJSON data:", geoJSON);
+        // console.log("Number of features in geoJSON:", geoJSON.features.length);
+
+        // Extract country names from CSV data
+        const csvCountryNames = new Set(csvData.map(d => d.country));
+
+        // Extract country names from GeoJSON data
+        const geoJsonCountryNames = new Set(geoJSON.features.map(feature => feature.properties.name));
+
+        // Find country names in CSV that are not in GeoJSON
+        const missingInGeoJson = Array.from(csvCountryNames).filter(name => !geoJsonCountryNames.has(name));
+
+        // Find country names in GeoJSON that are not in CSV
+        const missingInCsv = Array.from(geoJsonCountryNames).filter(name => !csvCountryNames.has(name));
+
+        //console.log("Missing in GeoJSON:", missingInGeoJson);
+        //console.log("Missing in CSV:", missingInCsv);
+
+        const nameMapping = {
+            "Andorra": "Andorra",
+            "UAE": "United Arab Emirates",
+            "Antigua and Barbuda": "Antigua and Barbuda",
+            "Bahrain": "Bahrain",
+            "Bahamas": "The Bahamas",
+            "Barbados": "Barbados",
+            "Cote d'Ivoire": "Ivory Coast",
+            "Congo, Dem. Rep.": "Democratic Republic of the Congo",
+            "Congo, Rep.": "Republic of the Congo",
+            "Comoros": "Comoros",
+            "Cape Verde": "Cape Verde",
+            "Dominica": "Dominica",
+            "Micronesia, Fed. Sts.": "Micronesia",
+            "UK": "United Kingdom",
+            "Guinea-Bissau": "Guinea Bissau",
+            "Grenada": "Grenada",
+            "Hong Kong, China": "Hong Kong",
+            "Kyrgyz Republic": "Kyrgyzstan",
+            "Kiribati": "Kiribati",
+            "St. Kitts and Nevis": "Saint Kitts and Nevis",
+            "Lao": "Laos",
+            "St. Lucia": "Saint Lucia",
+            "Liechtenstein": "Liechtenstein",
+            "Maldives": "Maldives",
+            "Marshall Islands": "Marshall Islands",
+            "North Macedonia": "Macedonia",
+            "Mauritius": "Mauritius",
+            "Nauru": "Nauru",
+            "Palau": "Palau",
+            "Palestine": "West Bank",
+            "Singapore": "Singapore",
+            "Serbia": "Republic of Serbia",
+            "Sao Tome and Principe": "Sao Tome and Principe",
+            "Slovak Republic": "Slovakia",
+            "Eswatini": "Swaziland",
+            "Seychelles": "Seychelles",
+            "Timor-Leste": "East Timor",
+            "Tonga": "Tonga",
+            "Tuvalu": "Tuvalu",
+            "Tanzania": "United Republic of Tanzania",
+            "USA": "United States of America",
+            "St. Vincent and the Grenadines": "Saint Vincent and the Grenadines",
+            "Samoa": "Samoa"
+        };
+
+
+        const mapBox = new mapboxgl.Map({
+            container: "map",
+            style: "mapbox://styles/mapbox/light-v10",
+            center: [10, 30],
+            zoom: 1
+        })
+
+        // Function to check if the map is loaded, then update it
+        function ensureMapIsLoadedAndUpdate(mapBox, updateFunction) {
+            if (mapBox.isStyleLoaded()) {
+                updateFunction();
+            } else {
+                mapBox.on('load', updateFunction);
+            }
+        }
+
+        // Function to update the map based on the selected year
+        function updateMap(selectedYear, geoJSON, csvData) {
+            // Filter CSV data for the selected year
+            const filteredData = csvData.filter(d => +d.year == selectedYear);
+            
+            // Create a map from country name to its data for easier access
+            let countryDataMap;
+
+            if(GLOBALSelectedIndicator == 'life_expectancy') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.life_expectancy]));
+            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.gender_ratio_of_mean_years_in_school]));
+            } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.gdp_per_capita]));
+            } else if (GLOBALSelectedIndicator  == 'co2_per_capita') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.co2_per_capita]));
+            }
+            
+
+            if (!geoJSON.features) {
+                console.error('The loaded geoJSON does not contain any features. Check the file structure.');
+                return;
+            }
+
+
+            // Finding the min and max CO2 per capita values for the color scale domain
+            const co2Values = Array.from(countryDataMap.values());
+            const maxCo2 = Math.max(...co2Values);
+            const minCo2 = Math.min(...co2Values);
+
+            let colorScale;
+
+            // Define a color scale dependent on the chosen indicator
+            if(GLOBALSelectedIndicator == 'life_expectancy') {
+                colorScale = d3.scaleSequential(d3.interpolateGreens)
+                                    .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
+            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+                colorScale = d3.scaleSequential(d3.interpolate("orange", "yellow"))
+                                    .domain([minCo2, maxCo2]);
+            } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
+                colorScale = d3.scaleSequential(d3.interpolateBlues)
+                                    .domain([minCo2, maxCo2]);
+            } else if (GLOBALSelectedIndicator  == 'co2_per_capita') {
+                colorScale = d3.scaleSequential(d3.interpolatePurples)
+                                    .domain([minCo2, maxCo2]);
+            }
+            
+
+            
+            geoJSON.features.forEach(feature => {
+                let countryName = feature.properties.name;
+                // If the GeoJSON country name is in the mapping, use the mapped name instead
+                const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                countryName = mappedName || countryName; // Use the original name if no mapping exists
+                
+                const co2Value = countryDataMap.get(countryName);
+                feature.properties.dataValue = co2Value || 0; // Use 0 if no data available
+            });
+
+            
+            // Update Mapbox layer:
+            // Function to run once the map is loaded or immediately if it's already loaded
+            const updateFunction = () => {
+                console.log("updateFunction is called");
+                if (mapBox.getSource('countries')) {
+                    // If the source already exists, update its data
+                    mapBox.getSource('countries').setData(geoJSON);
+                } else {
+                    // Add source and layer
+                    mapBox.addSource('countries', {
+                        type: 'geojson',
+                        data: geoJSON
+                    });
+
+                    mapBox.addLayer({
+                        id: 'countries-choropleth',
+                        type: 'fill',
+                        source: 'countries',
+                        layout: {},
+                        paint: {
+                            // dynamically set the fill-color based on 'dataValue'
+                            'fill-color': [
+                                'interpolate',
+                                ['linear'],
+                                ['get', 'dataValue'],
+                                minCo2, colorScale(minCo2), // Mapping min CO2 to lighter green
+                                maxCo2, colorScale(maxCo2)  // Mapping max CO2 to darker green
+                            ],
+                            'fill-opacity': 0.7
+                        }
+                    });
+                    console.log("Layer added. Current layers:", mapBox.getStyle().layers.map(layer => layer.id));
+
+                    // Add click event listener to the 'countries-choropleth' layer
+                    mapBox.on('click', 'countries-choropleth', function(e) {
+                        if (e.features.length > 0) {
+                            const countryName = e.features[0].properties.name;
+                            console.log("Clicked on " + countryName);
+                        }
+                    });
+
+                    // Change the cursor to a pointer when the mouse is over the layer.
+                    mapBox.on('mouseenter', 'countries-choropleth', function() {
+                        mapBox.getCanvas().style.cursor = 'pointer';
+                    });
+
+                    // Change it back to a default cursor when it leaves.
+                    mapBox.on('mouseleave', 'countries-choropleth', function() {
+                        mapBox.getCanvas().style.cursor = '';
+                    });
+
+                }
+        };
+        
+        // Check if the map is loaded and then update
+        ensureMapIsLoadedAndUpdate(mapBox, updateFunction);
+
+        }
+        updateMap(selectedYear, geoJSON, csvData);
+    })();
+
 }
 
 // ---------------------------------------------------------------- Filter by Year ------------------------------------------------------------------------------

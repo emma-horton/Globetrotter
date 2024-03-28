@@ -49,7 +49,7 @@ label {
 .dashboard {
     display: grid;
     width: 100%;
-    grid-template-columns: 4fr 3fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
 }
 
@@ -84,9 +84,9 @@ label {
 }
 
 /* set specific height for all grid items */
-#worldmap, #top5, #distribution, #linegraph {
+/* #worldmap, #top5, #distribution, #linegraph {
     min-height: 350px;
-}
+} */
 
 #sliderContainer {
     width: 80%;
@@ -119,4 +119,9 @@ input[type=range]::-moz-range-thumb {
     height: 20px; /* Slider handle height */
     background: #4CAF50; /* Green background */
     cursor: pointer; /* Cursor on hover */
+}
+
+#map {
+    width: 800px; /* or 100% if you want it to be full-width */
+    height: 300px; /* Adjust the height as needed */
 }
