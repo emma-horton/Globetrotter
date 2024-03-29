@@ -1191,7 +1191,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                 colorScale = d3.scaleSequential(d3.interpolateGreens)
                                     .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
             } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
-                colorScale = d3.scaleSequential(d3.interpolate("orange", "yellow"))
+                colorScale = d3.scaleSequential(d3.interpolate("yellow", "orange"))
                                     .domain([minCo2, maxCo2]);
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
                 colorScale = d3.scaleSequential(d3.interpolateBlues)
