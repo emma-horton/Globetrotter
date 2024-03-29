@@ -175,7 +175,7 @@ function showCo2EmissionData(year=2009) {
         loadAndUpdateDistributionChart('reformatted_data/reformatted_CO2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
-        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
+        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_CO2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
@@ -884,7 +884,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
 
 // ---------------------------------------------------------------- Scatter Plot ------------------------------------------------------------------------------
 function loadAndUpdateScatterPlotChart(selectedYear='2020', country) { 
-    d3.csv('reformatted_data/reformatted_all.csv').then(function(data) {
+    d3.csv('reformatted_data/reformatted_all_inc_education.csv').then(function(data) {
         console.log(data)
         d3.select("#scatter-plot").select("svg").remove();
 
@@ -894,24 +894,36 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
             console.log(filteredData)
             const updatedDataset = filteredData.map(item => {
                 return {
-                ...item, // Spread operator to copy existing properties
-                gdp_per_capita: parseFloat(item.gdp_per_capita),
-                co2_per_capita: parseFloat(item.co2_per_capita),
-                life_expectancy: parseFloat(item.life_expectancy)
+                    ...item, // Spread operator to copy existing properties
+                    gdp_per_capita: parseFloat(item.gdp_per_capita),
+                    co2_per_capita: parseFloat(item.co2_per_capita),
+                    life_expectancy: parseFloat(item.life_expectancy),
+                    mean_number_of_years_in_school: item.mean_number_of_years_in_school ? parseFloat(item.mean_number_of_years_in_school) : null
                 };
             });
+            let educationNonNullCount = 0; // Counter for non-null education values
             const averages = updatedDataset.reduce((acc, cur) => {
-            acc.gdp_per_capita += cur.gdp_per_capita;
-            acc.co2_per_capita += cur.co2_per_capita;
-            acc.life_expectancy += cur.life_expectancy;
-            return acc;
-            }, { gdp_per_capita: 0, co2_per_capita: 0, life_expectancy: 0 });
-
+                acc.gdp_per_capita += cur.gdp_per_capita;
+                acc.co2_per_capita += cur.co2_per_capita;
+                acc.life_expectancy += cur.life_expectancy;
+                if (cur.mean_number_of_years_in_school !== null) { // Check if education value is non-null
+                    acc.mean_number_of_years_in_school += cur.mean_number_of_years_in_school;
+                    educationNonNullCount++; // Increment counter
+                }
+        
+                return acc;
+            }, { gdp_per_capita: 0, co2_per_capita: 0, life_expectancy: 0, mean_number_of_years_in_school: 0 });
+        
+            // Dividing each metric by the total number of entries
             averages.gdp_per_capita /= updatedDataset.length;
             averages.co2_per_capita /= updatedDataset.length;
             averages.life_expectancy /= updatedDataset.length;
+            // Dividing education by the count of non-null education values
+            averages.mean_number_of_years_in_school /= educationNonNullCount;
+        
             return averages;
         }
+        
         // function finds the value of each metric for a given country 
         function findMetricsByCountryYear(country, year) {
             const result = data.find(item => item.country == country && item.year == year);
@@ -924,29 +936,39 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
                 year: year,
                 gdp_per_capita: result.gdp_per_capita,
                 co2_per_capita: result.co2_per_capita,
-                life_expectancy: result.life_expectancy
+                life_expectancy: result.life_expectancy,
+                mean_number_of_years_in_school: result.mean_number_of_years_in_school
               };
             }
         }
 
         // calculate percentage difference between countries metric and world average for each indicator
         world_average = calculateWorldAverages(selectedYear);
+        console.log('world average: ', world_average)
         country_average = findMetricsByCountryYear(country, selectedYear);
+        console.log('country average: ', country_average)
 
         gdp_percent_diff = ((parseFloat(country_average.gdp_per_capita) - world_average.gdp_per_capita) / world_average.gdp_per_capita) * 100
         co2_percent_diff = ((parseFloat(country_average.co2_per_capita)- world_average.co2_per_capita) / world_average.co2_per_capita) * 100
         life_expectancy_percent_diff = ((parseFloat(country_average.life_expectancy)- world_average.life_expectancy) / world_average.life_expectancy) * 100
+        if (country_average.mean_number_of_years_in_school == ""){
+            mean_number_of_years_in_school_percent_diff = null;
+        } else{
+            mean_number_of_years_in_school_percent_diff = ((parseFloat(country_average.mean_number_of_years_in_school)- world_average.mean_number_of_years_in_school) / world_average.mean_number_of_years_in_school) * 100
+        }
 
         console.log(gdp_percent_diff)
         console.log(co2_percent_diff)
         console.log(life_expectancy_percent_diff)
+        console.log(mean_number_of_years_in_school_percent_diff)
 
 
         // format data 
         const metricsData = [
                 { metric: 'GDP per Capita', percentDiff: gdp_percent_diff },
                 { metric: 'CO2 per Capita', percentDiff: co2_percent_diff },
-                { metric: 'Life Expectancy', percentDiff: life_expectancy_percent_diff}
+                { metric: 'Life Expectancy', percentDiff: life_expectancy_percent_diff},
+                { metric: 'Education', percentDiff: mean_number_of_years_in_school_percent_diff }
         ];
         // Setting margins and dimensions for the SVG canvas
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
@@ -970,7 +992,7 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
         .padding(0.1);
 
         // scale y axis 
-        const percentages = [gdp_percent_diff, co2_percent_diff, life_expectancy_percent_diff];
+        const percentages = [gdp_percent_diff, co2_percent_diff, life_expectancy_percent_diff, mean_number_of_years_in_school_percent_diff ];
         const hasNegativeNumber = percentages.some(element => element < 0);
         const hasPositiveNumber = percentages.some(element => element > 0);
         let y;
@@ -1009,19 +1031,21 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
 
         // Plotting points with conditional fill colors
         svg.selectAll(".point")
-        .data(metricsData)
-        .enter().append("circle") 
-        .attr("class", "point")
-        .attr("cx", d => x(d.metric) + x.bandwidth() / 2) 
-        .attr("cy", d => y(d.percentDiff))
-        .attr("r", 10) 
-        .attr("fill", d => {
-            // Determine the fill color based on the metric
-            if (d.metric === 'GDP per Capita') return '#6495ED';
-            else if (d.metric === 'CO2 per Capita') return '#BA55D3';
-            else if (d.metric === 'Life Expectancy') return '#32CD32';
-            else return "steelblue";
+            .data(metricsData.filter(d => d.percentDiff !== null)) // Filter out null values
+            .enter().append("circle")
+            .attr("class", "point")
+            .attr("cx", d => x(d.metric) + x.bandwidth() / 2)
+            .attr("cy", d => y(d.percentDiff))
+            .attr("r", 10)
+            .attr("fill", d => {
+                // Determine the fill color based on the metric
+                if (d.metric === 'GDP per Capita') return '#6495ED';
+                else if (d.metric === 'CO2 per Capita') return '#BA55D3';
+                else if (d.metric === 'Life Expectancy') return '#32CD32';
+                else if (d.metric === 'Education') return '#FFA500';
+                else return "steelblue";
         });
+
 
     })
 }
