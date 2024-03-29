@@ -1690,3 +1690,24 @@ function displayPage(year='2009') {
         loadAndUpdateScatterPlotChart(year, GLOBALSelectedCountry);
     }
 }
+
+function redirectToFactbook() {
+    d3.csv('reformatted_data/country_factbook_links.csv').then(function(data) {
+        // Transform the array of objects into an object with country names as keys and URLs as values
+        var countryURLMap = data.reduce(function(map, obj) {
+            map[obj.country] = obj.link;
+            return map;
+        }, {});
+
+        console.log(GLOBALSelectedCountry);
+        // Use the country name to get the URL from the map
+        var url = countryURLMap[GLOBALSelectedCountry];
+        console.log(url);
+
+        if (url) { // Make sure the url is not undefined
+            window.open(url, 'Popup', 'width=600,height=400,resizable=yes');
+        } else {
+            console.log('URL not found for selected country');
+        }
+    });
+}
