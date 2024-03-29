@@ -76,24 +76,36 @@
                 <div id="map"></div>
             </div>
             <div id="infobox">
-                <h2>Infobox & Tooltip</h2>
-                <div>
-                    <p>Hi there, Globetrotter!</p>
-                    <p>Have you ever wondered how key global indicators have changed over time? 
-                        You can choose between four key indicators of global development and learn more about them by clicking on the respective button.</p>
-                    <p>Tooltip: Explore the map and click on a country you want to visit for further insights.</p>
-                    <h3>What you are currently exploring:</h3>
-                    <div id="life_expectancy">
-                        <b>Life Expectancy</b> - The number of years people live on average in a country.
+                <h2>Infobox</h2>
+                <p>Hi there, Globetrotter!</p>
+                <p>Have you ever wondered how key global indicators have changed over time? 
+                    You can choose between four key indicators of global development - GDP per Capita, Life Expectancy, Education, and Emission per Capita.
+                    Click the buttons to switch between indicators.</p>
+                <div id="flex-container-infobox">
+                    <div>
+
+                        <p><h3>Tooltip:</h3> 
+                            <ul>
+                                <li>Move the time slider to see how values have changed over time.</li>
+                                <li>Hover over the graphs to learn more.</li>
+                                <li>Click on a country you want to visit for further insights.</li>
+                            </ul>
+                        </p>
                     </div>
-                    <div id="gdp_per_capita">
-                        <b>GDP per Capita</b> - The average Gross Domestic Product (GDP) per person in a country.
-                    </div>
-                    <div id="emissions_per_capita">
-                        <b>CO2 Emission per Capita</b> - The average CO2 emission per person in a country.
-                    </div>
-                    <div id="education">
-                        <b>Education</b> - Mean number of years a person goes to school.
+                    <div>
+                        <h3>What you are currently exploring:</h3>
+                        <div id="life_expectancy">
+                            <b>Life Expectancy</b> - The number of years people live on average in a country.
+                        </div>
+                        <div id="gdp_per_capita">
+                            <b>GDP per Capita</b> - The average Gross Domestic Product (GDP) per person in a country.
+                        </div>
+                        <div id="emissions_per_capita">
+                            <b>CO2 Emission per Capita</b> - The average CO2 emission per person in a country.
+                        </div>
+                        <div id="education">
+                            <b>Education</b> - Mean number of years a person goes to school.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,23 +134,29 @@
             </div>
             <div id="infobox">
                 <h2 id="heading-infobox-country"></h2>
-                <div>
-                    <p>Tooltip: Click on the map to get back to the world view.</p>
+                <div>                    
                     <h3>Indicators of Global Development:</h3>
-                    <div id="life_expectancy">
-                        <b>Life Expectancy</b> - The number of years people live on average in a country.
-                    </div>
-                    <div id="gdp_per_capita">
-                        <b>GDP per Capita</b> - The average Gross Domestic Product (GDP) per person in a country.
-                    </div>
-                    <div id="emissions_per_capita">
-                        <b>CO2 Emission per Capita</b> - The average CO2 emission per person in a country.
-                    </div>
-                    <div id="education">
-                        <b>Education</b> - Mean number of years a person goes to school.
-                    </div>
+                    <ul>
+                        <li><div id="life_expectancy">
+                            <b>Life Expectancy</b> - The number of years people live on average in a country.
+                        </div></li>
+                        <li><div id="gdp_per_capita">
+                            <b>GDP per Capita</b> - The average Gross Domestic Product (GDP) per person in a country.
+                        </div></li>
+                        <li><div id="emissions_per_capita">
+                            <b>CO2 Emission per Capita</b> - The average CO2 emission per person in a country.
+                        </div></li>
+                        <li><div id="education">
+                            <b>Education</b> - Mean number of years a person goes to school.
+                        </div></li>
+                    </ul>
+
+                    <p>Tooltip: Click on the map to get back to the world view.</p>
+
+                    <p>Still curious about this country? Click the button to find out more.</p>
+                    <button onclick="redirectToFactbook()">Find out more</button>
                 </div>
-                <button onclick="redirectToFactbook()">Click to find out more!</button>
+
             </div>
             <div id="linegraph-specific-country">
                 <h2>Historical Development</h2>

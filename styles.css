@@ -208,3 +208,9 @@ input[type=range]::-moz-range-thumb {
     pointer-events: none; 
     transition: opacity 0.2s ease; 
 }
+
+#flex-container-infobox {
+    display: flex;
+    column-gap: 20px;
+}
+

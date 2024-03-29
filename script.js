@@ -1346,7 +1346,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                                 minCo2, colorScale(minCo2), // Mapping min CO2 to lighter green
                                 maxCo2, colorScale(maxCo2)  // Mapping max CO2 to darker green
                             ],
-                            'fill-opacity': 0.7
+                            'fill-opacity': 0.8
                         }
                     });
                     console.log("Layer added. Current layers:", mapBox.getStyle().layers.map(layer => layer.id));
