@@ -1177,7 +1177,6 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                                     .domain([minCo2, maxCo2]);
             }
             
-
             
             geoJSON.features.forEach(feature => {
                 let countryName = feature.properties.name;
@@ -1243,6 +1242,53 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                         mapBox.getCanvas().style.cursor = '';
                     });
 
+                    // Popup for more Information
+                    const popup = new mapboxgl.Popup({
+                        closeButton: false,
+                        closeOnClick: false
+                    });
+
+                    // Function to get the value for a country, using the name mapping as a fallback
+                    function getValueForCountry(countryName, countryDataMap, nameMapping) {
+                        let value = countryDataMap.get(countryName); // Attempt to get the value directly
+
+                        if (value === undefined) {
+                            // If direct retrieval failed, attempt to use the alternative name
+                            const alternativeName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                            if (alternativeName) {
+                                value = countryDataMap.get(alternativeName); // Attempt with alternative name
+                            }
+                        }
+
+                        return value;
+                    }
+                    
+                    mapBox.on('mousemove', 'countries-choropleth', function(e) {
+                        if (e.features.length > 0) {
+                            const feature = e.features[0];
+                            const countryName = feature.properties.name;
+                            
+                            // Use the new function to get the value for the country
+                            const value = getValueForCountry(countryName, countryDataMap, nameMapping);
+                            
+                            // Check if the value is still undefined, it means there's no data available for this country
+                            const displayValue = value !== undefined ? value : 'No data available';
+                            const description = `${countryName} - ${indicator}: ${displayValue}`;
+                            
+                            // Populate the popup and set its coordinates based on the feature found.
+                            popup.setLngLat(e.lngLat)
+                                 .setHTML(description)
+                                 .addTo(mapBox);
+                        }
+                    });
+                    
+                    
+
+                    mapBox.on('mouseleave', 'countries-choropleth', function() {
+                        mapBox.getCanvas().style.cursor = '';
+                        popup.remove(); // hides the popup when the mouse leaves the country
+                    });
+                    
                 }
         };
         
@@ -1484,6 +1530,51 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
                     } else {
                         console.log("Selected country feature not found in GeoJSON.");
                     }
+
+                    // Popup for more Information
+                    const popup2 = new mapboxgl.Popup({
+                        closeButton: false,
+                        closeOnClick: false
+                    });
+
+                    // Function to get the value for a country, using the name mapping as a fallback
+                    function getValueForCountry(countryName, countryDataMap, nameMapping) {
+                        let value = countryDataMap.get(countryName); // Attempt to get the value directly
+
+                        if (value === undefined) {
+                            // If direct retrieval failed, attempt to use the alternative name
+                            const alternativeName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                            if (alternativeName) {
+                                value = countryDataMap.get(alternativeName); // Attempt with alternative name
+                            }
+                        }
+
+                        return value;
+                    }
+                    
+                    mapBox2.on('mousemove', 'countries-choropleth', function(e) {
+                        if (e.features.length > 0) {
+                            const feature = e.features[0];
+                            const countryName = feature.properties.name;
+                            
+                            // Use the new function to get the value for the country
+                            const value = getValueForCountry(countryName, countryDataMap, nameMapping);
+                            
+                            // Check if the value is still undefined, it means there's no data available for this country
+                            const displayValue = value !== undefined ? value : 'No data available';
+                            const description = `${countryName} - ${indicator}: ${displayValue}`;
+                            
+                            // Populate the popup and set its coordinates based on the feature found
+                            popup2.setLngLat(e.lngLat)
+                                 .setHTML(description)
+                                 .addTo(mapBox2);
+                        }
+                    });
+                    
+                    mapBox2.on('mouseleave', 'countries-choropleth', function() {
+                        mapBox2.getCanvas().style.cursor = '';
+                        popup2.remove(); // hides the popup when the mouse leaves the country
+                    });
 
                 }
 
