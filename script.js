@@ -19,7 +19,7 @@ function displayFirstDashboard() {
     document.getElementById("header").style.display = "none";
     document.getElementById("choose-indicator-popup").style.display = "none";
     document.getElementById("choose-country-popup").style.display = "none";
-    document.getElementById("dashboard-header").style.display = "block";
+    document.getElementById("dashboard-header").style.display = "flex";
     document.getElementById("indicator-dashboard-grid").style.display = "grid";
     document.getElementById("country-dashboard-grid").style.display = "none";
     document.getElementById("timeslider-and-navigation").style.display = "flex";
@@ -41,7 +41,7 @@ function displaySecondDashboard() {
     document.getElementById("header").style.display = "none";
     document.getElementById("choose-indicator-popup").style.display = "none";
     document.getElementById("choose-country-popup").style.display = "none";
-    document.getElementById("dashboard-header").style.display = "block";
+    document.getElementById("dashboard-header").style.display = "flex";
     document.getElementById("indicator-dashboard-grid").style.display = "none";
     document.getElementById("country-dashboard-grid").style.display = "grid";
     document.getElementById("timeslider-and-navigation").style.display = "flex";  
@@ -180,7 +180,7 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
         console.log("datapath", dataPath);
 
         const width = 600;					//specifies the width, height and margins of our SVG element
-        const height = 300;
+        const height = 200;
         const margin = 70;
 
         const data = await d3.csv(dataPath);
@@ -273,7 +273,7 @@ function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIn
         console.log("datapath", dataPath);
 
         const width = 600;					//specifies the width, height and margins of our SVG element
-        const height = 300;
+        const height = 200;
         const margin = 70;
 
         const data = await d3.csv(dataPath);
@@ -289,7 +289,7 @@ function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIn
 
         // Calculate indicator per year for the selected country
         const indicatorPerYearForSelectedCountry = d3.rollup(dataForSelectedCountry, 
-            v => d3.mean(v, d => +d[GLOBALSelectedIndicator]), // Assuming you want the average, if it's a single value per year, this step might need adjustment
+            v => d3.mean(v, d => +d[GLOBALSelectedIndicator]),
             d => d.year);
 
         // Convert into array of objects for further processing/visualizing
@@ -299,7 +299,7 @@ function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIn
 
         // Calculate average life expectancy for each year
         const averageIndicatorPerYear = d3.rollup(data, 
-            v => d3.mean(v, d => +d[GLOBALSelectedIndicator]), // Calculate average, convert life_expectancy to number
+            v => d3.mean(v, d => +d[GLOBALSelectedIndicator]),
             d => d.year); // Group by year
 
         console.log("averageIndicatorPerYear", averageIndicatorPerYear);
@@ -414,8 +414,8 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
         d3.select("#top5").select("svg").remove();
         // Setting margins and dimensions for the SVG canvas
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
-              svgWidth = 960,
-              svgHeight = 250,
+              svgWidth = 600,
+              svgHeight = 200,
               width = svgWidth - margin.left - margin.right,
               height = svgHeight - margin.top - margin.bottom;
 

@@ -2,6 +2,11 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: whitesmoke;
     margin: 0;
+    background-image: url("images/pexels-globe.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 main {
@@ -13,11 +18,15 @@ main {
 }
 
 .startpage-background {
-    background-image: url("images/pexels-globe.jpg");
+    /* background-image: url("images/pexels-globe.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: fixed; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 150px;
 }
 
 header {
@@ -27,13 +36,26 @@ header {
     text-align: center;
 }
 
+h1 {
+    font-size: 50pt;
+    color: rgb(40, 101, 139);
+    margin-top: -50px;
+}
+
+#header h2 {
+    color: rgb(40, 101, 139);
+}
+
 .popup {
     display: flex;
     flex-direction: column;
     padding: 50px;
-    background-color: rgba(245, 245, 245, 0.5);
+    margin-top: 50px;
+    background-color: rgba(245, 245, 245, 0.7);
     width: 500px;
     height: auto;
+    border-radius: 20px;
+    align-items: center;
 }
 
 #choose-indicator-optionlist {
@@ -46,39 +68,87 @@ label {
     display: inline-block;
 }
 
+button {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+#lifeExpectancyBtn {
+    background-color: #4CAF50;
+}
+#genderEqualityBtn {
+    background-color: orange;
+}
+#gdpPerCapitaBtn {
+    background-color: rgb(93, 151, 237);
+}
+#co2EmissionBtn {
+    background-color: rgb(174, 72, 199);
+}
+
+#dashboard-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .dashboard {
     display: grid;
     width: 100%;
+    padding-left: 5px;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
+    position: relative; /* needed to position the pseudo-element */
+}
+
+.dashboard::before {
+    content: ''; /* pseudo-element to set background opacity */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(245, 245, 245, 0.7); /* whitesmoke with 50% opacity */
+    z-index: -1;
 }
 
 /* background colors for debugging */
 #worldmap {
-    background-color: lightblue;
+    /* background-color: lightblue; */
     grid-column: 1; /* first column */ 
     grid-row: 1; /* first row */ 
 }
 
 #top5 {
-    background-color: lightcoral;
+    /* background-color: lightcoral; */
     grid-column: 2;
     grid-row: 1;
 }
 #scatter-plot {
-    background-color: lightcoral;
+    /* background-color: lightcoral; */
     grid-column: 2;
     grid-row: 1;
 }
 
 #distribution {
-    background-color: lightgreen;
+    /* background-color: lightgreen; */
     grid-column: 1;
     grid-row: 2;
 }
 
 #linegraph {
-    background-color: lightgoldenrodyellow;
+    /* background-color: lightgoldenrodyellow; */
     grid-column: 2; 
     grid-row: 2;
 }
