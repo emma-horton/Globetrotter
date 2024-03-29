@@ -518,40 +518,48 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
                                     (height + margin.top + 20) + ")")
             .style("text-anchor", "middle")
             .text(yLabel);
+
+            const tooltipDiv = d3.select("body").append("div")
+                .attr("id", "tooltip")
+                .style("opacity", 0)
+                .style("position", "absolute")
+                .style("background", "#fff")
+                .style("border", "1px solid #000")
+                .style("padding", "10px")
+                .style("border-radius", "5px")
+                .style("pointer-events", "none");
         
 
             // Redraw bars for the top five countries
             svg.selectAll(".rect-top5")
-            .data(topFiveUpdated)
-            .enter()
-            .append("rect")
-            .attr("class", "rect-top5")
-            .attr("x", 0)
-            .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
-            .attr("width", d => x(+d[GLOBALSelectedIndicator]))
-            .attr("height", barHeight) 
-            .style("fill", color)
-            .on("mouseenter", function(event, d) {
-                d3.select(this)
-                .transition()
-                .duration(200)
-                .style("fill", "#D3D3D3");
+                .data(topFiveUpdated)
+                .enter()
+                .append("rect")
+                .attr("class", "rect-top5")
+                .attr("x", 0)
+                .attr("y", (d, i) => startY + i * (barHeight + barSpacing))
+                .attr("width", d => x(+d[GLOBALSelectedIndicator]))
+                .attr("height", barHeight)
+                .style("fill", color)
+                .on("mouseenter", function(event, d) {
+                    tooltipDiv.html(`${yLabel}: ${d[GLOBALSelectedIndicator]}`) // Update tooltip content
+                        .style("left", (event.pageX + 10) + "px") // Position tooltip to the right of the cursor
+                        .style("top", (event.pageY - 10) + "px") // Position tooltip above the cursor
+                        .style("opacity", 1); // Make tooltip visible
 
-                d3.select(svg.node().parentNode)
-                .append("text")
-                .attr("class", "tooltip")
-                .attr("x", event.x - margin.left - 50)
-                .attr("y", event.y - margin.top - 50)
-                .text(`${yLabel}: ${d[GLOBALSelectedIndicator]}`);
-            })
-            .on("mouseout", function() {
-                d3.select(this)
-                .transition()
-                .duration(200)
-                .style("fill", color);
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .style("fill", "#D3D3D3"); // Highlight bar on hover
+                })
+                .on("mouseout", function() {
+                    tooltipDiv.style("opacity", 0); // Hide tooltip
 
-                d3.selectAll(".tooltip").remove();
-            });
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .style("fill", color); // Revert bar color
+                });
         
             // Adding country labels for the new bars
             svg.selectAll("text.label")
@@ -679,13 +687,26 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
 
             // Plot bars
             svg.selectAll(".rect")
-                .data(bins)
-                .join("rect")
-                    .attr("x", (d, i) => x(`Bin ${i + 1}`))
-                    .attr("y", d => y(d.length))
-                    .attr("width", x.bandwidth())
-                    .attr("height", d => height - y(d.length))
-                    .style("fill", color);
+            .data(bins)
+            .join("rect")
+                .attr("class", "rect") // Assign class for styling or selection
+                .attr("x", (d, i) => x(`Bin ${i + 1}`))
+                .attr("y", d => y(d.length))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.length))
+                .style("fill", color) // Initial bar color
+                .on("mouseenter", function(event, d) {
+                    d3.select(this)
+                        .transition() // Optional: smooth transition to hover color
+                        .duration(200) // Transition duration in milliseconds
+                        .style("fill", "#D3D3D3"); // Color when mouse enters the bar
+                })
+                .on("mouseout", function(event, d) {
+                    d3.select(this)
+                        .transition() // Optional: smooth transition back to original color
+                        .duration(200)
+                        .style("fill", color); // Revert to initial color when mouse leaves
+                });
             
             y.domain([0, d3.max(bins, d => d.length)]);
             svg.select(".y-axis")
@@ -1027,24 +1048,51 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
         svg.append("g")
         .attr("transform", `translate(0,${y(0)})`)
         .call(d3.axisBottom(x));
+
+        const tooltipDiv = d3.select("body").append("div")
+        .attr("class", "tooltip-div") // Use a class for styling
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background", "white")
+        .style("border", "solid 1px #000")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("pointer-events", "none"); // Ignore pointer events
+
         
 
         // Plotting points with conditional fill colors
         svg.selectAll(".point")
-            .data(metricsData.filter(d => d.percentDiff !== null)) // Filter out null values
-            .enter().append("circle")
-            .attr("class", "point")
-            .attr("cx", d => x(d.metric) + x.bandwidth() / 2)
-            .attr("cy", d => y(d.percentDiff))
-            .attr("r", 10)
-            .attr("fill", d => {
-                // Determine the fill color based on the metric
-                if (d.metric === 'GDP per Capita') return '#6495ED';
-                else if (d.metric === 'CO2 per Capita') return '#BA55D3';
-                else if (d.metric === 'Life Expectancy') return '#32CD32';
-                else if (d.metric === 'Education') return '#FFA500';
-                else return "steelblue";
+        .data(metricsData.filter(d => d.percentDiff !== null)) // Continue filtering out null values
+        .enter().append("circle")
+        .attr("class", "point")
+        .attr("cx", d => x(d.metric) + x.bandwidth() / 2)
+        .attr("cy", d => y(d.percentDiff))
+        .attr("r", 10)
+        .attr("fill", d => {
+            // Determine fill color based on the metric
+            if (d.metric === 'GDP per Capita') return '#6495ED';
+            else if (d.metric === 'CO2 per Capita') return '#BA55D3';
+            else if (d.metric === 'Life Expectancy') return '#32CD32';
+            else if (d.metric === 'Education') return '#FFA500';
+            else return "steelblue";
+        })
+        .on("mouseenter", function(event, d) {
+            tooltipDiv.html(`Indicator: ${d.metric}<br>% Difference: ${d.percentDiff.toFixed(2)}`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px")
+                .style("opacity", 1);
+            
+            d3.select(this)
+                .attr("r", 12); // Optionally enlarge point on hover for emphasis
+        })
+        .on("mouseout", function() {
+            tooltipDiv.style("opacity", 0);
+            
+            d3.select(this)
+                .attr("r", 10); // Revert point size
         });
+
 
 
     })
