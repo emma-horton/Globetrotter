@@ -175,7 +175,7 @@ function showCo2EmissionData(year=2009) {
         loadAndUpdateDistributionChart('reformatted_data/reformatted_CO2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
-        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
+        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_CO2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
