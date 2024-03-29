@@ -74,7 +74,7 @@ function updateGLOBALSelectedCountry() {
 
 
 
-function showLifeExpectancyData(year=2015) {
+function showLifeExpectancyData(year=2009) {
     console.log("Life Expectancy Data Shown");
     let selectedData = 'reformatted_data/reformatted_life_expectancy.csv';
     GLOBALSelectedIndicator = 'life_expectancy'
@@ -92,22 +92,22 @@ function showLifeExpectancyData(year=2015) {
         
     } else {
         console.log('dashboard2 only')
-        //loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, GLOBALSelectedCountry)
+        loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, GLOBALSelectedCountry)
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_life_expectancy.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_life_expectancy.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year);
     }
 } 
 
-function showGenderEqualityData(year=2015) {
-    console.log("Gender Equality Data Shown");
+function showGenderEqualityData(year=2009) {
+    console.log("Education Data Shown");
     let selectedData = 'reformatted_data/reformatted_gender_equality.csv';
-    GLOBALSelectedIndicator = 'gender_ratio_of_mean_years_in_school'
-    let yLabel = 'Gender Ratio of Mean Years in School'
+    GLOBALSelectedIndicator = 'mean_number_of_years_in_school'
+    let yLabel = 'Mean Years in School'
     let color = '#FFA500';
-    const binSize = 2.5;
+    const binSize = 1;
     document.getElementById("yearSlider").min = 1970;
-    document.getElementById("yearSlider").max = 2015;
+    document.getElementById("yearSlider").max = 2009;
     if (GLOBALSelectedCountry == 'any'){
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
@@ -121,7 +121,7 @@ function showGenderEqualityData(year=2015) {
     }
 }
 
-function showGdpPerCapitaData(year=2015) {
+function showGdpPerCapitaData(year=2009) {
     console.log("GDP Per Capita Data Shown");
     let selectedData = 'reformatted_data/reformatted_gdp.csv';
     GLOBALSelectedIndicator = 'gdp_per_capita'
@@ -143,7 +143,7 @@ function showGdpPerCapitaData(year=2015) {
     }
 }
 
-function showCo2EmissionData(year=2015) {
+function showCo2EmissionData(year=2009) {
     console.log("CO2 Emission Data Shown");
     let selectedData = 'reformatted_data/reformatted_CO2.csv';
     GLOBALSelectedIndicator = 'co2_per_capita'
@@ -167,7 +167,7 @@ function showCo2EmissionData(year=2015) {
 // Adding event listeners to buttons
 
 document.getElementById("lifeExpectancyBtn").addEventListener("click", function() {showLifeExpectancyData(); optionSelected("Life Expectancy")});
-document.getElementById("genderEqualityBtn").addEventListener("click", function() {showGenderEqualityData(); optionSelected("Gender Equality")});
+document.getElementById("genderEqualityBtn").addEventListener("click", function() {showGenderEqualityData(); optionSelected("Education")});
 document.getElementById("gdpPerCapitaBtn").addEventListener("click", function() {showGdpPerCapitaData(); optionSelected("GDP per Capita")});
 document.getElementById("co2EmissionBtn").addEventListener("click", function() {showCo2EmissionData(); optionSelected("CO2 Emissions per Capita")});
 
@@ -1027,7 +1027,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
         mapboxgl.accessToken = token;
 
         // replace later to account for slider interaction
-        // let selectedYear = 2015;
+        // let selectedYear = 2009;
         let selectedYear = year;
 
         const csvData = await d3.csv(dataPath);
@@ -1124,8 +1124,8 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
 
             if(GLOBALSelectedIndicator == 'life_expectancy') {
                 countryDataMap = new Map(filteredData.map(d => [d.country, +d.life_expectancy]));
-            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
-                countryDataMap = new Map(filteredData.map(d => [d.country, +d.gender_ratio_of_mean_years_in_school]));
+            } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.mean_number_of_years_in_school]));
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
                 countryDataMap = new Map(filteredData.map(d => [d.country, +d.gdp_per_capita]));
             } else if (GLOBALSelectedIndicator  == 'co2_per_capita') {
@@ -1150,7 +1150,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
             if(GLOBALSelectedIndicator == 'life_expectancy') {
                 colorScale = d3.scaleSequential(d3.interpolateGreens)
                                     .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
-            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+            } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
                 colorScale = d3.scaleSequential(d3.interpolate("orange", "yellow"))
                                     .domain([minCo2, maxCo2]);
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
@@ -1255,7 +1255,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
         mapboxgl.accessToken = token;
 
         // replace later to account for slider interaction
-        // let selectedYear = 2015;
+        // let selectedYear = 2009;
         let selectedYear = year;
 
         const csvData = await d3.csv(dataPath);
@@ -1352,8 +1352,8 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
 
             if(GLOBALSelectedIndicator == 'life_expectancy') {
                 countryDataMap = new Map(filteredData.map(d => [d.country, +d.life_expectancy]));
-            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
-                countryDataMap = new Map(filteredData.map(d => [d.country, +d.gender_ratio_of_mean_years_in_school]));
+            } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
+                countryDataMap = new Map(filteredData.map(d => [d.country, +d.mean_number_of_years_in_school]));
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
                 countryDataMap = new Map(filteredData.map(d => [d.country, +d.gdp_per_capita]));
             } else if (GLOBALSelectedIndicator  == 'co2_per_capita') {
@@ -1378,7 +1378,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
             if(GLOBALSelectedIndicator == 'life_expectancy') {
                 colorScale = d3.scaleSequential(d3.interpolateGreens)
                                     .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
-            } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+            } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
                 colorScale = d3.scaleSequential(d3.interpolate("orange", "yellow"))
                                     .domain([minCo2, maxCo2]);
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
@@ -1491,11 +1491,11 @@ document.getElementById("yearSlider").addEventListener("input", function() {
     displayPage(year);
 })
 
-function displayPage(year='2015') {
+function displayPage(year='2009') {
     // Call functions based on selected indicator
     if (GLOBALSelectedIndicator  == 'life_expectancy') {
         showLifeExpectancyData(year)
-    } else if (GLOBALSelectedIndicator  == 'gender_ratio_of_mean_years_in_school') {
+    } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
         showGenderEqualityData(year)
     } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
         showGdpPerCapitaData(year)
