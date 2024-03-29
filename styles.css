@@ -195,6 +195,7 @@ input[type=range]::-moz-range-thumb {
 #map, #map-country {
     width: 1000px;
     height: 500px;
+    border-radius: 20px;
 }
 
 .tooltip-div {

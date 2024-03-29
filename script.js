@@ -24,7 +24,7 @@ function displayFirstDashboard() {
     document.getElementById("country-dashboard-grid").style.display = "none";
     document.getElementById("timeslider-and-navigation").style.display = "flex";
     document.getElementById("dahboard-heading").innerHTML = indicator;
-    document.getElementById("next-btn").onclick = displayCountryPopup;
+    document.getElementById("next-btn").onclick = handleNextButton;
 }
 
 function displayCountryPopup() {
@@ -64,14 +64,45 @@ function optionSelected(value) {
 }
 
 function updateGLOBALSelectedCountry() {
-    GLOBALSelectedCountry = document.getElementById('userInput').value;
+    GLOBALSelectedCountry = document.getElementById('country-dropdown').value;
     displaySecondDashboard();
 }
 
-// add onclick event if a country is chosen on the map
-// it should call this function to show the second dashboard:
-// displaySecondDashboard();
+function populateDropDownMenu() {
+    // Initialize an empty array to hold the unique country names
+    let uniqueCountries = [];
 
+    // Load the CSV file
+    d3.csv("reformatted_data/reformatted_all.csv").then(function(data) {
+        // Loop over each row in the dataset
+        data.forEach(function(row) {
+            // Check if the country is already in the uniqueCountries array
+            if (!uniqueCountries.includes(row.country)) {
+                // If not, add it to the array
+                uniqueCountries.push(row.country);
+            }
+        });
+
+        // After processing all rows, populate the dropdown
+        let dropdown = document.getElementById('country-dropdown');
+
+        // Sort countries alphabetically if desired
+        uniqueCountries.sort().forEach(function(country) {
+            let option = document.createElement('option');
+            option.value = option.textContent = country;
+            dropdown.appendChild(option);
+        });
+
+    }).catch(function(error) {
+        // Log any error that occurs during the loading of the CSV
+        console.error('Error loading the CSV file:', error);
+    });
+}
+
+function handleNextButton() {
+    populateDropDownMenu();
+    displayCountryPopup();
+}
 
 
 function showLifeExpectancyData(year=2009) {
@@ -1269,10 +1300,32 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
             // Function to run once the map is loaded or immediately if it's already loaded
             const updateFunction = () => {
                 console.log("updateFunction is called");
+
+                // Check if the 'countries-choropleth' layer exists and remove it if it does
+                if (mapBox.getLayer('countries-choropleth')) {
+                    mapBox.removeLayer('countries-choropleth');
+                }
+
                 if (mapBox.getSource('countries')) {
                     // If the source already exists, update its data
                     mapBox.getSource('countries').setData(geoJSON);
                 } else {
+                    // Remove water layers => does not have the desired effect unfortunately
+                    // To make the water on the map transparent, the "land" layer has to be invisible, but then updating the map does not work properly anymore
+                    const water_layers = ['water', 'water-shadow'] 
+                    
+                    // Other layers:
+                    // "land", "landcover", "national-park", "landuse", "water-shadow","hillshade","land-structure-polygon", "land-structure-line", "aeroway-polygon", "aeroway-line",
+                    // "building-outline", "building","tunnel-street-minor-low", "tunnel-street-minor-case", "tunnel-primary-secondary-tertiary-case", "tunnel-major-link-case", "tunnel-motorway-trunk-case", "tunnel-construction", "tunnel-path", "tunnel-steps", "tunnel-major-link", "tunnel-pedestrian",
+                    // "tunnel-street-minor", "tunnel-primary-secondary-tertiary", "tunnel-motorway-trunk", "road-pedestrian-case", "road-minor-low",  "road-street-low", "road-minor-case", "road-street-case", "road-secondary-tertiary-case", "road-primary-case", "road-major-link-case", "road-motorway-trunk-case",
+                    // "road-construction", "road-path", "road-steps", "road-major-link", "road-pedestrian", "road-minor", "road-street", "road-secondary-tertiary","road-primary", "road-motorway-trunk", "road-rail", "bridge-pedestrian-case", "bridge-street-minor-low", "bridge-street-minor-case", "bridge-primary-secondary-tertiary-case",
+                    // "bridge-motorway-trunk-2", "admin-1-boundary-bg", "admin-0-boundary-bg", "admin-1-boundary", "admin-0-boundary", "admin-0-boundary-disputed", "road-label",
+                    // "waterway-label", "natural-line-label", "natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label", "settlement-subdivision-label", "settlement-label", "state-label", "country-label"
+                    
+                    // water_layers.forEach(layer => {
+                    //     // mapBox.setPaintProperty(layer, 'fill-opacity', 0);
+                    //     mapBox.setLayoutProperty(layer, 'visibility', 'none');})
+                    
                     // Add source and layer
                     mapBox.addSource('countries', {
                         type: 'geojson',
@@ -1518,7 +1571,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
                 colorScale = d3.scaleSequential(d3.interpolateGreens)
                                     .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
             } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
-                colorScale = d3.scaleSequential(d3.interpolate("orange", "yellow"))
+                colorScale = d3.scaleSequential(d3.interpolate("yellow", "orange"))
                                     .domain([minCo2, maxCo2]);
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
                 colorScale = d3.scaleSequential(d3.interpolateBlues)

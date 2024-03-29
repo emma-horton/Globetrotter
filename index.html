@@ -51,10 +51,11 @@
                 Click on a country on the map or search for a country here [make sure spelling is correct]:
             </div>
             <form id="myForm">
-                <!-- <label for="userInput">Search: </label><br> -->
-                <input type="text" id="userInput" name="userInput"><br>
+                <select id="country-dropdown">
+                    <option id="userInput" value="">Select a Country</option>
+                </select>
               </form>
-            <button id="choose-country-btn" onclick="updateGLOBALSelectedCountry()">Let's choose a country!</button>
+            <button id="choose-country-btn" onclick="updateGLOBALSelectedCountry()">Visit</button>
         </section>
 
         <!-- Dashboard header -->
