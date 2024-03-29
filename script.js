@@ -23,7 +23,7 @@ function displayFirstDashboard() {
     document.getElementById("indicator-dashboard-grid").style.display = "grid";
     document.getElementById("country-dashboard-grid").style.display = "none";
     document.getElementById("timeslider-and-navigation").style.display = "flex";
-    
+    document.getElementById("dahboard-heading").innerHTML = indicator;
     document.getElementById("next-btn").onclick = displayCountryPopup;
 }
 
@@ -45,7 +45,6 @@ function displaySecondDashboard() {
     document.getElementById("indicator-dashboard-grid").style.display = "none";
     document.getElementById("country-dashboard-grid").style.display = "grid";
     document.getElementById("timeslider-and-navigation").style.display = "flex";  
-    GLOBALSelectedCountry = document.getElementById('userInput').value;
     document.getElementById("dahboard-heading").innerHTML = GLOBALSelectedCountry + " - " + indicator;
     console.log(GLOBALSelectedCountry); 
     displayPage();      
@@ -62,6 +61,11 @@ function optionSelected(value) {
     } else {
         displaySecondDashboard();
     }
+}
+
+function updateGLOBALSelectedCountry() {
+    GLOBALSelectedCountry = document.getElementById('userInput').value;
+    displaySecondDashboard();
 }
 
 // add onclick event if a country is chosen on the map
@@ -1198,7 +1202,9 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                     mapBox.on('click', 'countries-choropleth', function(e) {
                         if (e.features.length > 0) {
                             const countryName = e.features[0].properties.name;
-                            console.log("Clicked on " + countryName);
+                            GLOBALSelectedCountry = countryName;
+                            console.log("Clicked on " + GLOBALSelectedCountry);
+                            displaySecondDashboard();
                         }
                     });
 
@@ -1424,7 +1430,9 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
                     mapBox2.on('click', 'countries-choropleth', function(e) {
                         if (e.features.length > 0) {
                             const countryName = e.features[0].properties.name;
-                            console.log("Clicked on " + countryName);
+                            GLOBALSelectedCountry = 'any';
+                            // console.log("back to " + GLOBALSelectedCountry);
+                            displayFirstDashboard();
                         }
                     });
 
