@@ -83,6 +83,10 @@ function showLifeExpectancyData(year=2015) {
     const binSize = 1;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2024;
+    document.getElementById("life_expectancy").style.display = "block";
+    document.getElementById("gdp_per_capita").style.display = "none";
+    document.getElementById("emissions_per_capita").style.display = "none";
+    document.getElementById("education").style.display = "none";
     console.log(GLOBALSelectedCountry)
     if (GLOBALSelectedCountry == 'any'){
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
@@ -108,6 +112,10 @@ function showGenderEqualityData(year=2015) {
     const binSize = 2.5;
     document.getElementById("yearSlider").min = 1970;
     document.getElementById("yearSlider").max = 2015;
+    document.getElementById("life_expectancy").style.display = "none";
+    document.getElementById("gdp_per_capita").style.display = "none";
+    document.getElementById("emissions_per_capita").style.display = "none";
+    document.getElementById("education").style.display = "block";
     if (GLOBALSelectedCountry == 'any'){
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
@@ -130,6 +138,10 @@ function showGdpPerCapitaData(year=2015) {
     const binSize = 300;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2024;
+    document.getElementById("life_expectancy").style.display = "none";
+    document.getElementById("gdp_per_capita").style.display = "block";
+    document.getElementById("emissions_per_capita").style.display = "none";
+    document.getElementById("education").style.display = "none";
     if (GLOBALSelectedCountry == 'any'){
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
@@ -152,6 +164,10 @@ function showCo2EmissionData(year=2015) {
     const binSize = 0.25;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2022;
+    document.getElementById("life_expectancy").style.display = "none";
+    document.getElementById("gdp_per_capita").style.display = "none";
+    document.getElementById("emissions_per_capita").style.display = "block";
+    document.getElementById("education").style.display = "none";
     if (GLOBALSelectedCountry == 'any'){
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year)
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
@@ -1243,6 +1259,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
     console.log("inside loadAndUpdateWorldMapForSelectedCountry");
 
     document.getElementById("country-on-map").innerHTML = GLOBALSelectedCountry + " on the Map";
+    document.getElementById("heading-infobox-country").innerHTML = "Welcome to " + GLOBALSelectedCountry + "!";
 
     (async () => {
 
