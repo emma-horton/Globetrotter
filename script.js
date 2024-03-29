@@ -93,7 +93,7 @@ function showLifeExpectancyData(year=2015) {
     } else {
         console.log('dashboard2 only')
         //loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, GLOBALSelectedCountry)
-        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_life_expectancy.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_life_expectancy.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_life_expectancy.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year);
     }
@@ -112,10 +112,10 @@ function showGenderEqualityData(year=2015) {
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
-        loadAndUpdateDistributionChart('reformatted_data/reformatted_gender_equality.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution', 'reformatted_data/reformatted_gender_equality.csv')
+        loadAndUpdateDistributionChart('reformatted_data/reformatted_gender_equality.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
-        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gender_equality.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gender_equality.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_gender_equality.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
@@ -137,7 +137,7 @@ function showGdpPerCapitaData(year=2015) {
         loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
-        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gdp.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_gdp.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
@@ -145,7 +145,6 @@ function showGdpPerCapitaData(year=2015) {
 
 function showCo2EmissionData(year=2015) {
     console.log("CO2 Emission Data Shown");
-    'reformatted_data/reformatted_co2.csv'
     let selectedData = 'reformatted_data/reformatted_CO2.csv';
     GLOBALSelectedIndicator = 'co2_per_capita'
     let yLabel = 'CO2 per capita (tonnes)'
@@ -157,10 +156,10 @@ function showCo2EmissionData(year=2015) {
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year)
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
-        loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
+        loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_CO2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
-        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/OUTLIERS_REMOVED_reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year)
+        loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
     }
@@ -616,32 +615,6 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Number of Countries"); 
-
-        // Add a fake X-axis to the chart
-        const maxValue = d3.min(data, d => d[GLOBALSelectedIndicator]);
-        const minValue = d3.max(data, d => d[GLOBALSelectedIndicator]);
-        const fakeXScale = d3.scaleLinear()
-            .domain([maxValue, minValue])
-            .range([0, width]);
-        svg.append("g")
-            .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(fakeXScale));
-        svg.append("text")             
-        .attr("transform",
-                "translate(" + (width/2) + " ," + 
-                                (height + margin.top + 20) + ")")
-        .style("text-anchor", "middle")
-        .text(yLabel);
-
-        // Plot bars
-        svg.selectAll(".rect")
-            .data(bins)
-            .join("rect")
-                .attr("x", (d, i) => x(`Bin ${i + 1}`))
-                .attr("y", d => y(d.length))
-                .attr("width", x.bandwidth())
-                .attr("height", d => height - y(d.length))
-                .style("fill", color);
         
         filterDataAndUpdateChart(selectedYear);
         
@@ -658,8 +631,12 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
         document.getElementById("sliderValue").innerText = selectedYear;
 
         function updateTimeline(filteredData) {
+            // Clear existing bars
+            svg.selectAll("rect")
+            .remove();
             console.log(filteredData)
             updatedData = filteredData;
+            //updatedData = filteredData;
             console.log('Updated data: ', updatedData)
         
             updatedData.forEach(function(d) {
@@ -669,7 +646,7 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
             
             // Create bins
             const numBins = Math.ceil((max + 1) / binSize);
-            let bins = Array(numBins).fill(0).map(() => []);
+            let bins = new Array(numBins).fill(0).map(() => []);
             
             // Assign data to bins
             updatedData.forEach(function(d) {
@@ -697,6 +674,25 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
             y.domain([0, d3.max(bins, d => d.length)]);
             svg.select(".y-axis")
                 .call(d3.axisLeft(y));
+
+            x.domain(bins.map((d, i) => `Bin ${i + 1}`));
+            svg.select(".x-axis")
+                .call(d3.axisBottom(x));
+            
+            const maxValue = d3.min(updatedData, d => d[GLOBALSelectedIndicator]);
+            const minValue = d3.max(updatedData, d => d[GLOBALSelectedIndicator]);
+            const fakeXScale = d3.scaleLinear()
+                .domain([maxValue, minValue])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(fakeXScale));
+            svg.append("text")             
+            .attr("transform",
+                    "translate(" + (width/2) + " ," + 
+                                    (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text(yLabel);
 
         }
     });
@@ -765,33 +761,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .text("Number of Countries"); 
-
-            // Add a fake X-axis to the chart
-            const maxValue = d3.min(data, d => d[GLOBALSelectedIndicator]);
-            const minValue = d3.max(data, d => d[GLOBALSelectedIndicator]);
-            const fakeXScale = d3.scaleLinear()
-                .domain([maxValue, minValue])
-                .range([0, width]);
-            svg.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(fakeXScale));
-            svg.append("text")             
-            .attr("transform",
-                    "translate(" + (width/2) + " ," + 
-                                    (height + margin.top + 20) + ")")
-            .style("text-anchor", "middle")
-            .text(yLabel);
-
-            // Plot bars
-            svg.selectAll(".rect")
-                .data(bins)
-                .join("rect")
-                    .attr("x", (d, i) => x(`Bin ${i + 1}`))
-                    .attr("y", d => y(d.length))
-                    .attr("width", x.bandwidth())
-                    .attr("height", d => height - y(d.length))
-                    .style("fill", color);
-            
+  
             filterDataAndUpdateChart(selectedYear);
             
             // Filter the data for the selected year
@@ -805,10 +775,14 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
             // Set the slider's value
             document.getElementById("yearSlider").value = selectedYear;
             document.getElementById("sliderValue").innerText = selectedYear;
-
+  
             function updateTimeline(filteredData) {
+                // Clear existing bars
+                svg.selectAll("rect")
+                .remove();
                 console.log(filteredData)
                 updatedData = filteredData;
+                //updatedData = filteredData;
                 console.log('Updated data: ', updatedData)
             
                 updatedData.forEach(function(d) {
@@ -832,7 +806,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                 console.log('bins')
                 console.log(bins);
             
-
+    
                 // Plot bars
                 svg.selectAll(".rect")
                     .data(bins)
@@ -846,7 +820,26 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                 y.domain([0, d3.max(bins, d => d.length)]);
                 svg.select(".y-axis")
                     .call(d3.axisLeft(y));
-
+    
+                x.domain(bins.map((d, i) => `Bin ${i + 1}`));
+                svg.select(".x-axis")
+                    .call(d3.axisBottom(x));
+                
+                const maxValue = d3.min(updatedData, d => d[GLOBALSelectedIndicator]);
+                const minValue = d3.max(updatedData, d => d[GLOBALSelectedIndicator]);
+                fakeXScale = d3.scaleLinear()
+                    .domain([maxValue, minValue])
+                    .range([0, width]);
+                svg.append("g")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(fakeXScale));
+                svg.append("text")             
+                .attr("transform",
+                        "translate(" + (width/2) + " ," + 
+                                        (height + margin.top + 20) + ")")
+                .style("text-anchor", "middle")
+                .text(yLabel);
+    
             }
         // Creates arrow pointing to specific position of a country on plot 
         if (GLOBALSelectedCountry !== 'any') {
