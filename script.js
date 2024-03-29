@@ -284,12 +284,8 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
 }
 
 function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color) {
-    
-    console.log("inside country linegraph");
-
     (async () => {
         const dataPath = selectedData;
-        console.log("datapath", dataPath);
 
         const width = 600;					//specifies the width, height and margins of our SVG element
         const height = 200;
@@ -301,10 +297,11 @@ function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIn
         // console.table(data);		//loads table in a nice format - just to try it out (probably not super practical for this tutorial)
 
         const groupedData = d3.group(data, d => d.year); // groupss data for each year
-        console.log(groupedData);
+
 
         // Filter data for the selected country
         const dataForSelectedCountry = data.filter(d => d.country === GLOBALSelectedCountry);
+      
 
         // Calculate indicator per year for the selected country
         const indicatorPerYearForSelectedCountry = d3.rollup(dataForSelectedCountry, 
@@ -313,29 +310,36 @@ function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIn
 
         // Convert into array of objects for further processing/visualizing
         const indicatorArrayForSelectedCountry = Array.from(indicatorPerYearForSelectedCountry, ([year, value]) => ({ year, value }));
-        console.log(indicatorArrayForSelectedCountry);
-        
+
+        const maxValueSelectedCountry = Math.max(...indicatorArrayForSelectedCountry.map(obj => obj.value));
+        const minValueSelectedCountry = Math.min(...indicatorArrayForSelectedCountry.map(obj => obj.value));
 
         // Calculate average life expectancy for each year
         const averageIndicatorPerYear = d3.rollup(data, 
             v => d3.mean(v, d => +d[GLOBALSelectedIndicator]),
             d => d.year); // Group by year
 
-        console.log("averageIndicatorPerYear", averageIndicatorPerYear);
+     
 
         // Convert into array of objects for further processing/visualising
         const averageIndicatorArray = Array.from(averageIndicatorPerYear, ([year, average]) => ({ year, average }));
-        console.log(averageIndicatorArray);
+        const maxMeanValue = Math.max(...averageIndicatorArray.map(obj => obj.average));
+        const minMeanValue = Math.min(...averageIndicatorArray.map(obj => obj.average));
+     
+
+        // find range of values for y axis 
+        let range = [minMeanValue, maxMeanValue, maxValueSelectedCountry, minValueSelectedCountry]
+
 
         const timeExtent = d3.extent(data, (d) => d.year);
-        console.log("timeExtent", timeExtent);
+
 
         const xScale = d3.scaleLinear()
             .domain(d3.extent(averageIndicatorArray, d => +d.year)) // convert year to number
             .range([0, width]);
-
+        
         const yScale = d3.scaleLinear()
-            .domain([d3.min(averageIndicatorArray, d => d.average), d3.max(averageIndicatorArray, d => d.average)])
+            .domain([d3.min(range), d3.max(range)])
             .range([height, 0]);
 
         const x_axis = d3.axisBottom(xScale);
