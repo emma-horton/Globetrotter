@@ -183,7 +183,7 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
         console.log("datapath", dataPath);
 
         const width = 600;					//specifies the width, height and margins of our SVG element
-        const height = 200;
+        const height = 150;
         const margin = 70;
 
         const data = await d3.csv(dataPath);
@@ -580,8 +580,8 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
 
         // Set the dimensions and margins of the graph
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
-            svgWidth = 960,
-            svgHeight = 250,
+            svgWidth = 600,
+            svgHeight = 200,
             width = svgWidth - margin.left - margin.right,
             height = svgHeight - margin.top - margin.bottom;
 
@@ -726,8 +726,8 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
 
             // Set the dimensions and margins of the graph
             const margin = {top: 10, right: 20, bottom: 50, left: 100},
-                svgWidth = 960,
-                svgHeight = 250,
+                svgWidth = 600,
+                svgHeight = 200,
                 width = svgWidth - margin.left - margin.right,
                 height = svgHeight - margin.top - margin.bottom;
 
@@ -934,8 +934,8 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
         ];
         // Setting margins and dimensions for the SVG canvas
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
-            svgWidth = 960,
-            svgHeight = 250,
+            svgWidth = 600,
+            svgHeight = 200,
             width = svgWidth - margin.left - margin.right,
             height = svgHeight - margin.top - margin.bottom;
 
