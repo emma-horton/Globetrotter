@@ -80,7 +80,7 @@ function showLifeExpectancyData(year=2015) {
     GLOBALSelectedIndicator = 'life_expectancy'
     let yLabel = 'Life Expectancy (years)'
     let color = '#32CD32';
-    const binSize = 2.5;
+    const binSize = 1;
     document.getElementById("yearSlider").min = 1800;
     document.getElementById("yearSlider").max = 2024;
     console.log(GLOBALSelectedCountry)
@@ -134,7 +134,7 @@ function showGdpPerCapitaData(year=2015) {
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
-        loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_gdp.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
+        loadAndUpdateDistributionChart('reformatted_data/reformatted_gdp.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gdp.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_gdp.csv')
@@ -156,7 +156,7 @@ function showCo2EmissionData(year=2015) {
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year)
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
-        loadAndUpdateDistributionChart('reformatted_data/OUTLIERS_REMOVED_reformatted_CO2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
+        loadAndUpdateDistributionChart('reformatted_data/reformatted_CO2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
         console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_co2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
