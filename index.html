@@ -47,10 +47,11 @@
         <!-- 2. popup to choose a country -->
         <section class="popup" id="choose-country-popup">
             <div id="choose-country-text">
-                Let's dive deeper into a specific country. Click on one country of your choice on the map and let's explore how their indicators compare to the world averages.
+                Let's dive deeper into a specific country and let's explore how their indicators compare to the world averages. 
+                Click on a country on the map or search for a country here [make sure spelling is correct]:
             </div>
             <form id="myForm">
-                <label for="userInput">Search: </label><br>
+                <!-- <label for="userInput">Search: </label><br> -->
                 <input type="text" id="userInput" name="userInput"><br>
               </form>
             <button id="choose-country-btn" onclick="updateGLOBALSelectedCountry()">Let's choose a country!</button>
@@ -149,8 +150,7 @@
                 <label for="yearSlider">Year: <span id="sliderValue"></span></label>
                 <input type="range" id="yearSlider" min="1800" max="2024" value="1800" step="1">
             </div>
-            <button id="back-btn">back</button>
-            <button id="next-btn">next</button>
+            <button id="next-btn">Visit a Country</button>
         </section>
     </main>
     

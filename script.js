@@ -133,7 +133,7 @@ function showGdpPerCapitaData(year=2009) {
     console.log("GDP Per Capita Data Shown");
     let selectedData = 'reformatted_data/reformatted_gdp.csv';
     GLOBALSelectedIndicator = 'gdp_per_capita'
-    let yLabel = 'GDP per capita (international dollars)'
+    let yLabel = 'GDP / capita (int. $)'
     let color = '#6495ED';
     const binSize = 300;
     document.getElementById("yearSlider").min = 1800;
@@ -159,7 +159,7 @@ function showCo2EmissionData(year=2009) {
     console.log("CO2 Emission Data Shown");
     let selectedData = 'reformatted_data/reformatted_CO2.csv';
     GLOBALSelectedIndicator = 'co2_per_capita'
-    let yLabel = 'CO2 per capita (tonnes)'
+    let yLabel = 'CO2 / capita (tonnes)'
     let color = '#BA55D3';
     const binSize = 0.25;
     document.getElementById("yearSlider").min = 1800;
@@ -200,7 +200,7 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
 
         const width = 600;					//specifies the width, height and margins of our SVG element
         const height = 150;
-        const margin = 70;
+        const margin = 50;
 
         const data = await d3.csv(dataPath);
 
