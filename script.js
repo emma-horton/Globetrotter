@@ -444,13 +444,19 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
             d[GLOBALSelectedIndicator] = +d[GLOBALSelectedIndicator];
         });
 
-        // Sorting data to get top five countries by life expectancy
+        // if (GLOBALSelectedIndicator === "gender_ratio_of_mean_years_in_school") {
+        //     // Sorting to get the top 5 countries closest to 100%
+        //     data.sort(function(a, b) {
+        //         return Math.abs(100-a[GLOBALSelectedIndicator]) - Math.abs(100-b)[GLOBALSelectedIndicator]; // I think this does not work https://stackoverflow.com/questions/26922131/sorting-an-array-by-which-value-is-closest-to-1
+        //     });
+
+        // Sorting data to get top five countries by indicator
         data.sort(function(a, b) {
             return b[GLOBALSelectedIndicator] - a[GLOBALSelectedIndicator];
         });
 
         let topFive = data.slice(0, 5);
-        console.log(topFive)
+        console.log("top5", topFive)
 
         // Calculating dimensions for bars in the bar chart
         const barHeight = 20;
@@ -469,6 +475,16 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
 
         function updateTop5Timeline(updatedData) {
             let topFiveUpdated = updatedData.sort((a, b) => b[GLOBALSelectedIndicator] - a[GLOBALSelectedIndicator]).slice(0, 5);
+
+            // let topFiveUpdated;
+            // if (GLOBALSelectedIndicator === "gender_ratio_of_mean_years_in_school") {
+            //     // Sorting to get the top 5 countries closest to 100%
+            //     topFiveUpdated = updatedData.sort((a, b) => Math.abs(100-a[GLOBALSelectedIndicator]) - Math.abs(100-b)[GLOBALSelectedIndicator]).slice(0, 5)
+            // } else {
+            //     // Sorting data to get top five countries by indicator
+            //     topFiveUpdated = updatedData.sort((a, b) => b[GLOBALSelectedIndicator] - a[GLOBALSelectedIndicator]).slice(0, 5)
+            // }
+
             console.log(topFiveUpdated)
             // Defining the x-axis scale based on life expectancy data
             const x = d3.scaleLinear()
