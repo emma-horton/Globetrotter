@@ -134,6 +134,7 @@ button:hover {
     /* background-color: lightcoral; */
     grid-column: 2;
     grid-row: 1;
+    width: 100%;
 }
 #scatter-plot {
     /* background-color: lightcoral; */
@@ -192,6 +193,6 @@ input[type=range]::-moz-range-thumb {
 }
 
 #map, #map-country {
-    width: 800px;
-    height: 300px;
+    width: 1000px;
+    height: 450px;
 }
