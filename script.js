@@ -54,7 +54,7 @@ displayStartPage();
 
 function optionSelected(value) {
     indicator = value;
-    console.log(indicator + " selected");
+    //console.log(indicator + " selected");
     if (GLOBALSelectedCountry == 'any') {
         document.getElementById("dahboard-heading").innerHTML = indicator;
         displayFirstDashboard();
@@ -118,7 +118,7 @@ function showLifeExpectancyData(year=2009) {
     document.getElementById("gdp_per_capita").style.display = "none";
     document.getElementById("emissions_per_capita").style.display = "none";
     document.getElementById("education").style.display = "none";
-    console.log(GLOBALSelectedCountry)
+    //console.log(GLOBALSelectedCountry)
     if (GLOBALSelectedCountry == 'any'){
         loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year);
         loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color);
@@ -126,7 +126,7 @@ function showLifeExpectancyData(year=2009) {
         loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
         
     } else {
-        console.log('dashboard2 only')
+        //console.log('dashboard2 only')
         loadAndUpdateDistributionChart('reformatted_data/reformatted_life_expectancy.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, GLOBALSelectedCountry)
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_life_expectancy.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_life_expectancy.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color);
@@ -153,7 +153,7 @@ function showGenderEqualityData(year=2009) {
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/reformatted_gender_equality.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
-        console.log('dashboard2 only')
+        //console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gender_equality.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_gender_equality.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
@@ -179,7 +179,7 @@ function showGdpPerCapitaData(year=2009) {
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/reformatted_gdp.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
-        console.log('dashboard2 only')
+        //console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_gdp.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_gdp.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
@@ -205,7 +205,7 @@ function showCo2EmissionData(year=2009) {
         loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, color, year);
         loadAndUpdateDistributionChart('reformatted_data/reformatted_CO2.csv', GLOBALSelectedIndicator, yLabel, color, binSize, year, '#distribution')
     } else {
-        console.log('dashboard2 only')
+        //console.log('dashboard2 only')
         loadAndUpdateDistributionChartForSelectedCountry('reformatted_data/reformatted_CO2.csv',GLOBALSelectedIndicator, yLabel, color, binSize, year, 'reformatted_data/reformatted_CO2.csv')
         loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color)
         loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year)
@@ -223,11 +223,11 @@ document.getElementById("co2EmissionBtn").addEventListener("click", function() {
 // Loading and processing the CSV data
 function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, color) { 
 
-    console.log("inside linegraph");
+    //console.log("inside linegraph");
 
     (async () => {
         const dataPath = selectedData;
-        console.log("datapath", dataPath);
+        //console.log("datapath", dataPath);
 
         const width = 800;					//specifies the width, height and margins of our SVG element
         const height = 160;
@@ -239,18 +239,18 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
         // console.table(data);		//loads table in a nice format - just to try it out (probably not super practical for this tutorial)
 
         const groupedData = d3.group(data, d => d.year); // groupss data for each year
-        console.log(groupedData);
+        //console.log(groupedData);
 
         // Calculate average life expectancy for each year
         const averageIndicatorPerYear = d3.rollup(data, 
             v => d3.mean(v, d => +d[GLOBALSelectedIndicator]), // Calculate average, convert life_expectancy to number
             d => d.year); // Group by year
 
-        console.log(averageIndicatorPerYear);
+        //console.log(averageIndicatorPerYear);
 
         // Convert into array of objects for further processing/visualising
         const averageIndicatorArray = Array.from(averageIndicatorPerYear, ([year, average]) => ({ year, average }));
-        console.log(averageIndicatorArray);
+        //console.log(averageIndicatorArray);
 
         const timeExtent = d3.extent(data, (d) => d.year);
         console.log("timeExtent", timeExtent);
@@ -507,7 +507,7 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
         });
 
         let topFive = data.slice(0, 5);
-        console.log("top5", topFive)
+        //console.log("top5", topFive)
 
         // Calculating dimensions for bars in the bar chart
         const barHeight = 20;
@@ -519,7 +519,7 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
         // Filter the data for the selected year
         function filterDataAndUpdateTop5Chart(selectedYear) {
             let filteredData = data.filter(d => d.year == selectedYear);
-            console.log(filteredData);
+            //console.log(filteredData);
             updateTop5Timeline(filteredData);
         }
 
@@ -536,7 +536,7 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
             //     topFiveUpdated = updatedData.sort((a, b) => b[GLOBALSelectedIndicator] - a[GLOBALSelectedIndicator]).slice(0, 5)
             // }
 
-            console.log(topFiveUpdated)
+            //console.log(topFiveUpdated)
             // Defining the x-axis scale based on life expectancy data
             const x = d3.scaleLinear()
             .domain([0, d3.max(topFiveUpdated, d => +d[GLOBALSelectedIndicator])])
@@ -613,9 +613,9 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
 // ---------------------------------------------------------------- Distribution Plot ------------------------------------------------------------------------------
 function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, yLabel, color, binSize, selectedYear, idPlacement) { 
     d3.csv(selectedData).then(function(data) {
-        console.log(data)
+        //console.log(data)
         d3.select(idPlacement).select("svg").remove();
-        console.log(data)
+        //console.log(data)
 
         data.forEach(function(d) {
             d[GLOBALSelectedIndicator] = +d[GLOBALSelectedIndicator]; // '+' converts strings to numbers
@@ -635,7 +635,7 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
                 console.log('error creating bin')
             }
         });
-        console.log(bins);
+        //console.log(bins);
 
         // Set the dimensions and margins of the graph
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
@@ -680,7 +680,7 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
         // Filter the data for the selected year
         function filterDataAndUpdateChart(selectedYear) {
             let filteredData = data.filter(d => d.year == selectedYear);
-            console.log(filteredData);
+            //console.log(filteredData);
             updateTimeline(filteredData);
         }
         // set default year when indicator picked 
@@ -693,10 +693,10 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
             // Clear existing bars
             svg.selectAll("rect")
             .remove();
-            console.log(filteredData)
+            //console.log(filteredData)
             updatedData = filteredData;
             //updatedData = filteredData;
-            console.log('Updated data: ', updatedData)
+            //console.log('Updated data: ', updatedData)
         
             updatedData.forEach(function(d) {
                 d[GLOBALSelectedIndicator] = +d[GLOBALSelectedIndicator]; // '+' converts strings to numbers
@@ -716,8 +716,7 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
                     console.log('error creating bin')
                 }
             });
-            console.log('bins')
-            console.log(bins);
+            //console.log('bins', bins)
         
 
             // Plot bars
@@ -772,9 +771,9 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
 
 function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSelectedIndicator, yLabel, color, binSize, selectedYear, unmodifiedData, idPlacement='#distribution-specific-country'){   
     d3.csv(selectedData).then(function(data) {
-            console.log(data)
+            //console.log(data)
             d3.select(idPlacement).select("svg").remove();
-            console.log(data)
+            //console.log(data)
 
             data.forEach(function(d) {
                 d[GLOBALSelectedIndicator] = +d[GLOBALSelectedIndicator];
@@ -794,7 +793,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                     console.log('error creating bin')
                 }
             });
-            console.log(bins);
+            //console.log(bins);
 
             // Set the dimensions and margins of the graph
             const margin = {top: 10, right: 20, bottom: 50, left: 100},
@@ -839,7 +838,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
             // Filter the data for the selected year
             function filterDataAndUpdateChart(selectedYear) {
                 let filteredData = data.filter(d => d.year == selectedYear);
-                console.log(filteredData);
+                //console.log(filteredData);
                 updateTimeline(filteredData);
             }
             // set default year when indicator picked 
@@ -852,10 +851,10 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                 // Clear existing bars
                 svg.selectAll("rect")
                 .remove();
-                console.log(filteredData)
+                //console.log(filteredData)
                 updatedData = filteredData;
                 //updatedData = filteredData;
-                console.log('Updated data: ', updatedData)
+                //console.log('Updated data: ', updatedData)
             
                 updatedData.forEach(function(d) {
                     d[GLOBALSelectedIndicator] = +d[GLOBALSelectedIndicator]; // '+' converts strings to numbers
@@ -875,8 +874,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                         console.log('error creating bin')
                     }
                 });
-                console.log('bins')
-                console.log(bins);
+                //console.log('bins', bins);
             
     
                 // Plot bars
@@ -954,13 +952,13 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
 // ---------------------------------------------------------------- Scatter Plot ------------------------------------------------------------------------------
 function loadAndUpdateScatterPlotChart(selectedYear='2020', country) { 
     d3.csv('reformatted_data/reformatted_all_inc_education.csv').then(function(data) {
-        console.log(data)
+        //console.log(data)
         d3.select("#scatter-plot").select("svg").remove();
 
         // function selects all countries in a given year and fin average of each metric 
         function calculateWorldAverages(year) {
             const filteredData = data.filter(d => d.year === year);
-            console.log(filteredData)
+            //console.log(filteredData)
             const updatedDataset = filteredData.map(item => {
                 return {
                     ...item, // Spread operator to copy existing properties
@@ -1026,10 +1024,10 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
             mean_number_of_years_in_school_percent_diff = ((parseFloat(country_average.mean_number_of_years_in_school)- world_average.mean_number_of_years_in_school) / world_average.mean_number_of_years_in_school) * 100
         }
 
-        console.log(gdp_percent_diff)
-        console.log(co2_percent_diff)
-        console.log(life_expectancy_percent_diff)
-        console.log(mean_number_of_years_in_school_percent_diff)
+        // console.log(gdp_percent_diff)
+        // console.log(co2_percent_diff)
+        // console.log(life_expectancy_percent_diff)
+        // console.log(mean_number_of_years_in_school_percent_diff)
 
 
         // format data 
@@ -1150,11 +1148,11 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
 
 function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, year) {
 
-    console.log("inside loadAndUpdateWorldMap");
+    //console.log("inside loadAndUpdateWorldMap");
 
     (async () => {
 
-        console.log("inside async world map function");
+        //console.log("inside async world map function");
         // token
         let token = "pk.eyJ1IjoibHNrNSIsImEiOiJjbHU5cDV4aWgwYmcyMnFudDMxNHdjOXhrIn0.ZE-NoOXAw8wF5hg2OCQlUw";
 
@@ -1167,7 +1165,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
         let selectedYear = year;
 
         const csvData = await d3.csv(dataPath);
-        console.log("data:", csvData);
+        //console.log("data:", csvData);
         const geoJSON = await d3.json("raw_data/countries.geo.json");
         // console.log("geoJSON data:", geoJSON);
         // console.log("Number of features in geoJSON:", geoJSON.features.length);
@@ -1312,7 +1310,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
             // Update Mapbox layer:
             // Function to run once the map is loaded or immediately if it's already loaded
             const updateFunction = () => {
-                console.log("updateFunction is called");
+                //console.log("updateFunction is called");
 
                 // Check if the 'countries-choropleth' layer exists and remove it if it does
                 if (mapBox.getLayer('countries-choropleth')) {
@@ -1362,7 +1360,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                             'fill-opacity': 0.8
                         }
                     });
-                    console.log("Layer added. Current layers:", mapBox.getStyle().layers.map(layer => layer.id));
+                    //console.log("Layer added. Current layers:", mapBox.getStyle().layers.map(layer => layer.id));
 
                     // Add click event listener to the 'countries-choropleth' layer
                     mapBox.on('click', 'countries-choropleth', function(e) {
@@ -1444,14 +1442,12 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
 }
 
 function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedIndicator, year) {
-    console.log("inside loadAndUpdateWorldMapForSelectedCountry");
 
     document.getElementById("country-on-map").innerHTML = GLOBALSelectedCountry + " on the Map";
     document.getElementById("heading-infobox-country").innerHTML = "Welcome to " + GLOBALSelectedCountry + "!";
 
     (async () => {
 
-        console.log("inside async world map function");
         // token
         let token = "pk.eyJ1IjoibHNrNSIsImEiOiJjbHU5cDV4aWgwYmcyMnFudDMxNHdjOXhrIn0.ZE-NoOXAw8wF5hg2OCQlUw";
 
@@ -1464,7 +1460,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
         let selectedYear = year;
 
         const csvData = await d3.csv(dataPath);
-        console.log("data:", csvData);
+        //console.log("data:", csvData);
         const geoJSON = await d3.json("raw_data/countries.geo.json");
         // console.log("geoJSON data:", geoJSON);
         // console.log("Number of features in geoJSON:", geoJSON.features.length);
@@ -1638,7 +1634,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
                             'fill-opacity': 0.7
                         }
                     });
-                    console.log("Layer added. Current layers:", mapBox2.getStyle().layers.map(layer => layer.id));
+                    //console.log("Layer added. Current layers:", mapBox2.getStyle().layers.map(layer => layer.id));
 
                     // Add click event listener to the 'countries-choropleth' layer
                     mapBox2.on('click', 'countries-choropleth', function(e) {
@@ -1662,7 +1658,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
 
                     // Find the feature for GLOBALSelectedCountry
                     const countryFeature = geoJSON.features.find(feature => feature.properties.name === GLOBALSelectedCountry || feature.properties.name === nameMapping[GLOBALSelectedCountry]);
-                    console.log("countryFeature", countryFeature)
+                    //console.log("countryFeature", countryFeature)
                     if (countryFeature) {
                         // Calculate bounding box with Turf.js
                         const bbox = turf.bbox(countryFeature);

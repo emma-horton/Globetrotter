@@ -18,11 +18,6 @@ main {
 }
 
 .startpage-background {
-    /* background-image: url("images/pexels-globe.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -148,38 +143,29 @@ button:hover {
 #worldmap {
     /* background-color: lightblue; */
     grid-column: 1; /* first column */ 
-    grid-row: 1 / span 3; /* first row */ 
+    grid-row: 1 / span 3; /* first row until including third row */ 
     margin-right: 80px;
 }
 
 #top5 {
-    /* background-color: lightcoral; */
     grid-column: 2;
     grid-row: 1;
     width: 100%;
 }
 #scatter-plot {
-    /* background-color: lightcoral; */
     grid-column: 2;
     grid-row: 1;
 }
 
 #distribution {
-    /* background-color: lightgreen; */
     grid-column: 2;
     grid-row: 2;
 }
 
 #linegraph, #linegraph-specific-country {
-    /* background-color: lightgoldenrodyellow; */
     grid-column: 2; 
     grid-row: 3;
 }
-
-/* set specific height for all grid items */
-/* #worldmap, #top5, #distribution, #linegraph {
-    min-height: 350px;
-} */
 
 #sliderContainer {
     width: 80%;
