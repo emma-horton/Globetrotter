@@ -881,13 +881,26 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
     
                 // Plot bars
                 svg.selectAll(".rect")
-                    .data(bins)
-                    .join("rect")
-                        .attr("x", (d, i) => x(`Bin ${i + 1}`))
-                        .attr("y", d => y(d.length))
-                        .attr("width", x.bandwidth())
-                        .attr("height", d => height - y(d.length))
-                        .style("fill", color);
+                .data(bins)
+                .join("rect")
+                    .attr("class", "rect") // Assign class for styling or selection
+                    .attr("x", (d, i) => x(`Bin ${i + 1}`))
+                    .attr("y", d => y(d.length))
+                    .attr("width", x.bandwidth())
+                    .attr("height", d => height - y(d.length))
+                    .style("fill", color) // Initial bar color
+                    .on("mouseenter", function(event, d) {
+                        d3.select(this)
+                            .transition() // Optional: smooth transition to hover color
+                            .duration(200) // Transition duration in milliseconds
+                            .style("fill", "#D3D3D3"); // Color when mouse enters the bar
+                    })
+                    .on("mouseout", function(event, d) {
+                        d3.select(this)
+                            .transition() // Optional: smooth transition back to original color
+                            .duration(200)
+                            .style("fill", color); // Revert to initial color when mouse leaves
+                    });
                 
                 y.domain([0, d3.max(bins, d => d.length)]);
                 svg.select(".y-axis")
