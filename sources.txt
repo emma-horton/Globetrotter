@@ -11,9 +11,18 @@ https://www.youtube.com/watch?v=OoZ0LWD9KUs
 https://docs.mapbox.com/ios/maps/guides/
 https://medium.com/@amy.degenaro/introduction-to-digital-cartography-geojson-and-d3-js-c27f066aa84
 
+Mapbox:
+https://docs.mapbox.com/style-spec/reference/layers/
+https://docs.mapbox.com/mapbox-gl-js/example/popup-on-hover/
+https://docs.mapbox.com/mapbox-gl-js/example/geojson-polygon/
+
+
 Turf.js:
 https://docs.mapbox.com/help/tutorials/analysis-with-turf/
 https://turfjs.org/docs/#bbox
 
+D3.js color scales:
+http://using-d3js.com/04_05_sequential_scales.html
+https://d3js.org/d3-interpolate/value#interpolateBasis
 
 
