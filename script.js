@@ -1301,8 +1301,8 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
             geoJSON.features.forEach(feature => {
                 let countryName = feature.properties.name;
                 // If the GeoJSON country name is in the mapping, use the mapped name instead
-                const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
-                countryName = mappedName || countryName; // Use the original name if no mapping exists
+                //const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                //countryName = mappedName || countryName; // Use the original name if no mapping exists
                 
                 const co2Value = countryDataMap.get(countryName);
                 feature.properties.dataValue = co2Value || 0; // Use 0 if no data available
@@ -1599,8 +1599,8 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
             geoJSON.features.forEach(feature => {
                 let countryName = feature.properties.name;
                 // If the GeoJSON country name is in the mapping, use the mapped name instead
-                const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
-                countryName = mappedName || countryName; // Use the original name if no mapping exists
+                //const mappedName = Object.keys(nameMapping).find(key => nameMapping[key] === countryName);
+                //countryName = mappedName || countryName; // Use the original name if no mapping exists
                 
                 const co2Value = countryDataMap.get(countryName);
                 feature.properties.dataValue = co2Value || 0; // Use 0 if no data available
