@@ -229,9 +229,9 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
         const dataPath = selectedData;
         console.log("datapath", dataPath);
 
-        const width = 600;					//specifies the width, height and margins of our SVG element
-        const height = 150;
-        const margin = 50;
+        const width = 800;					//specifies the width, height and margins of our SVG element
+        const height = 160;
+        const margin = 30;
 
         const data = await d3.csv(dataPath);
 
@@ -299,14 +299,14 @@ function loadAndUpdateLineChart(selectedData, GLOBALSelectedIndicator, yLabel, c
         // Add the X Axis label
         svg.append("text")
             .attr("x", width / 2 + margin)
-            .attr("y", height + margin * 0.7)
+            .attr("y", height + margin * 1.2)
             .style("text-anchor", "middle")
             .text("Time");
 
         // Add the Y Axis label
         svg.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left)
+            .attr("y", 0 - margin * 0.5)
             .attr("x",0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
@@ -318,9 +318,9 @@ function loadAndUpdateLineChartForSelectedCountry(selectedData, GLOBALSelectedIn
     (async () => {
         const dataPath = selectedData;
 
-        const width = 600;					//specifies the width, height and margins of our SVG element
-        const height = 200;
-        const margin = 70;
+        const width = 800;					//specifies the width, height and margins of our SVG element
+        const height = 180;
+        const margin = 50;
 
         const data = await d3.csv(dataPath);
 
@@ -468,8 +468,8 @@ function loadAndUpdateTop5Chart(selectedData, GLOBALSelectedIndicator, yLabel, c
         d3.select("#top5").select("svg").remove();
         // Setting margins and dimensions for the SVG canvas
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
-              svgWidth = 600,
-              svgHeight = 200,
+              svgWidth = 800,
+              svgHeight = 250,
               width = svgWidth - margin.left - margin.right,
               height = svgHeight - margin.top - margin.bottom;
 
@@ -639,7 +639,7 @@ function loadAndUpdateDistributionChart(selectedData, GLOBALSelectedIndicator, y
 
         // Set the dimensions and margins of the graph
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
-            svgWidth = 600,
+            svgWidth = 800,
             svgHeight = 200,
             width = svgWidth - margin.left - margin.right,
             height = svgHeight - margin.top - margin.bottom;
@@ -798,8 +798,8 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
 
             // Set the dimensions and margins of the graph
             const margin = {top: 10, right: 20, bottom: 50, left: 100},
-                svgWidth = 600,
-                svgHeight = 200,
+                svgWidth = 800,
+                svgHeight = 180,
                 width = svgWidth - margin.left - margin.right,
                 height = svgHeight - margin.top - margin.bottom;
 
@@ -1028,7 +1028,7 @@ function loadAndUpdateScatterPlotChart(selectedYear='2020', country) {
         ];
         // Setting margins and dimensions for the SVG canvas
         const margin = {top: 10, right: 20, bottom: 50, left: 100},
-            svgWidth = 600,
+            svgWidth = 800,
             svgHeight = 200,
             width = svgWidth - margin.left - margin.right,
             height = svgHeight - margin.top - margin.bottom;
@@ -1225,7 +1225,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
             container: "map",
             style: "mapbox://styles/mapbox/light-v10",
             center: [10, 30],
-            zoom: 1
+            zoom: 0.6
         })
 
         // Function to check if the map is loaded, then update it
@@ -1274,7 +1274,7 @@ function loadAndUpdateWorldMap(selectedData, GLOBALSelectedIndicator, color, yea
                 colorScale = d3.scaleSequential(d3.interpolateGreens)
                                     .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
             } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
-                colorScale = d3.scaleSequential(d3.interpolate("yellow", "orange"))
+                colorScale = d3.scaleSequential(d3.interpolate("#FFF5EE", "orange"))
                                     .domain([minCo2, maxCo2]);
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
                 colorScale = d3.scaleSequential(d3.interpolateBlues)
@@ -1571,7 +1571,7 @@ function loadAndUpdateWorldMapForSelectedCountry(selectedData, GLOBALSelectedInd
                 colorScale = d3.scaleSequential(d3.interpolateGreens)
                                     .domain([minCo2, maxCo2]); // Set the domain of the color scale to min and max values
             } else if (GLOBALSelectedIndicator  == 'mean_number_of_years_in_school') {
-                colorScale = d3.scaleSequential(d3.interpolate("yellow", "orange"))
+                colorScale = d3.scaleSequential(d3.interpolate("#FFF5EE", "orange"))
                                     .domain([minCo2, maxCo2]);
             } else if (GLOBALSelectedIndicator  == 'gdp_per_capita') {
                 colorScale = d3.scaleSequential(d3.interpolateBlues)

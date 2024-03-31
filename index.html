@@ -60,13 +60,18 @@
 
         <!-- Dashboard header -->
         <section id="dashboard-header">
-            <h2 id="dahboard-heading"></h2>
+            <h1 id="dahboard-heading"></h1>
             <div id="indicator-filter">
                 <button id="lifeExpectancyBtn">Life Expectancy</button>
                 <button id="genderEqualityBtn">Education</button>
                 <button id="gdpPerCapitaBtn">GDP per Capita</button>
                 <button id="co2EmissionBtn">CO2 Emission per Capita</button>
             </div>
+            <div id="sliderContainer">
+                <label for="yearSlider">Year: <span id="sliderValue"></span></label>
+                <input type="range" id="yearSlider" min="1800" max="2024" value="1800" step="1">
+            </div>
+            <button id="next-btn">Visit a Country</button>
         </section>
 
         <!-- 1. dashboard: explore an indicator -->
@@ -74,8 +79,6 @@
             <div id="worldmap">
                 <h2>World Map</h2>
                 <div id="map"></div>
-            </div>
-            <div id="infobox">
                 <h2>Infobox</h2>
                 <p>Hi there, Globetrotter!</p>
                 <p>Have you ever wondered how key global indicators have changed over time? 
@@ -109,6 +112,9 @@
                     </div>
                 </div>
             </div>
+            <div id="infobox">
+
+            </div>
             <div id="top5">
                 <h2>Top 5 Countries</h2>
             </div>
@@ -123,16 +129,8 @@
         <!-- 2. dashboard: explore a country -->
         <section class="dashboard" id="country-dashboard-grid">
             <div id="worldmap">
-                <h2 id="country-on-map"></h2>
+                <h1 id="country-on-map"></h1>
                 <div id="map-country"></div>
-            </div>
-            <div id="scatter-plot">
-                <h2>% Distance from World Average for each Indicator</h2>
-            </div>
-            <div id='distribution-specific-country'>
-                <h2>Distribution of Countries</h2>
-            </div>
-            <div id="infobox">
                 <h2 id="heading-infobox-country"></h2>
                 <div>                    
                     <h3>Indicators of Global Development:</h3>
@@ -156,6 +154,15 @@
                     <p>Still curious about this country? Click the button to find out more.</p>
                     <button onclick="redirectToFactbook()">Find out more</button>
                 </div>
+            </div>
+            <div id="scatter-plot">
+                <h2>% Distance from World Average for each Indicator</h2>
+            </div>
+            <div id='distribution-specific-country'>
+                <h2>Distribution of Countries</h2>
+            </div>
+            <div id="infobox">
+
 
             </div>
             <div id="linegraph-specific-country">
@@ -165,12 +172,12 @@
 
         <!-- Dashboard footer: timeslider and Navigation -->
         <section id="timeslider-and-navigation">
-            <button id="motion-btn">Play Motion</button>
-            <div id="sliderContainer">
+            <!-- <button id="motion-btn">Play Motion</button> -->
+            <!-- <div id="sliderContainer">
                 <label for="yearSlider">Year: <span id="sliderValue"></span></label>
                 <input type="range" id="yearSlider" min="1800" max="2024" value="1800" step="1">
-            </div>
-            <button id="next-btn">Visit a Country</button>
+            </div> -->
+            
         </section>
     </main>
     
