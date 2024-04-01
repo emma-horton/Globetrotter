@@ -2,7 +2,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: whitesmoke;
     margin: 0;
-    background-image: url("images/pexels-globe.jpg");
+    background-image: url("images/pexels-globe.jpg"); /* Image source: https://www.pexels.com/photo/person-holding-world-globe-facing-mountain-346885/ */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
