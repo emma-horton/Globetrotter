@@ -7,6 +7,11 @@ Open index.html in a browser.
 Follow the guidance in the visualisation (i.e., first choose an inital indicator, explore first dashboard, switch to second dashboard, follow link to external website or go back to first dashboard).
 
 ## Files and Directories
+Main files:
+- relevant for use: index.html, connected to script.js and styles.css
+- joint report pdf
+- sketches pdf
+Directories:
 - images: background image
 - raw_data: original data source files
 - reformatted_data: reformatted data and python script for reformatting
