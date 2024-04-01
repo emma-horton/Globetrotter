@@ -935,7 +935,7 @@ function loadAndUpdateDistributionChartForSelectedCountry(selectedData, GLOBALSe
                     const arrowPath = "M0,0 L10,0 L5,10 L0,0"; 
                     svg.append("path")
                     .attr("d", arrowPath)
-                    .attr("fill", "red") 
+                    .attr("fill", "blue") 
                     .attr("transform", `translate(${arrowXPosition - 5}, ${arrowYPosition})`); 
                 }
             });
