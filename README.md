@@ -2,6 +2,8 @@
 
 Submitted by ch376 and lsk5.
 
+[Watch the video on YouTube]([http://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=bHvdq3sUcV0))
+
 ## How to run the Globetrotter visualisation:
 Open index.html in a browser.
 Follow the guidance in the visualisation (i.e., first choose an inital indicator, explore first dashboard, switch to second dashboard, follow link to external website or go back to first dashboard).
