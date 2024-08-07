@@ -2,7 +2,9 @@
 
 Submitted by ch376 and lsk5.
 
-[Watch the video on YouTube]([http://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=bHvdq3sUcV0))
+## Demo Video
+
+[![Watch the video](http://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](http://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ## How to run the Globetrotter visualisation:
 Open index.html in a browser.
