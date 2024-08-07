@@ -4,7 +4,7 @@ Submitted by ch376 and lsk5.
 
 ## Demo Video
 
-[![Watch the video](http://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](http://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[![Watch the video](http://img.youtube.com/vi/bHvdq3sUcV0/0.jpg)](http://www.youtube.com/watch?v=bHvdq3sUcV0)
 
 ## How to run the Globetrotter visualisation:
 Open index.html in a browser.
